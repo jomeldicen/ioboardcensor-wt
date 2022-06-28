@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>dotnet-RenTradeWindowService-8D762202-B912-44CE-8715-F0B34DAFAE7F</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\Shared\appsettings.Development.json" Link="appsettings.Development.json" />
+    <Content Include="..\Shared\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Experimental.System.Messaging" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="5.0.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ioBoardLib">
+      <HintPath>..\..\..\..\My Files\RenTrade\dll\YF8032demoApplet\bin\Debug\net6.0-windows\ioBoardLib.dll</HintPath>
+    </Reference>
+    <Reference Include="LearCebuPAO_API">
+      <HintPath>..\..\..\RenTrade\Backup RenTrade\SignalControllerV3\RenTradeServices\bin\Debug\LearCebuPAO_API.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
