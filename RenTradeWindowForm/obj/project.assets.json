@@ -1676,11 +1676,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+      "projectUniqueName": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
       "projectName": "RenTradeWindowForm",
-      "projectPath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+      "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
       "packagesPath": "C:\\Users\\jpdicen\\.nuget\\packages\\",
-      "outputPath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowForm\\obj\\",
+      "outputPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -1704,8 +1704,8 @@
         "net5.0-windows7.0": {
           "targetAlias": "net5.0-windows",
           "projectReferences": {
-            "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowService\\RenTradeWindowService.csproj": {
-              "projectPath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowService\\RenTradeWindowService.csproj"
+            "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj": {
+              "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj"
             }
           }
         }

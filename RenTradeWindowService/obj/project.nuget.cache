@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SvoJIntMDoXpkqF1LHJh9kuMRCRg4bPwBwu2WQaChMZpBNJ8gltFVy34qqfekc/Vfdw3MbJ0xHPqcT1Muy3W0A==",
+  "dgSpecHash": "3u6GxA3v8FCPC/1TGQTyQyfu6jW9uL89War7oFnc8Z7W9dzcK5gBTghiv5VdludRer4MJLIsz8npmD1W/+kheA==",
   "success": true,
-  "projectFilePath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowService\\RenTradeWindowService.csproj",
+  "projectFilePath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jpdicen\\.nuget\\packages\\experimental.system.messaging\\1.1.0\\experimental.system.messaging.1.1.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.extensions.configuration\\5.0.0\\microsoft.extensions.configuration.5.0.0.nupkg.sha512",
