@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using RenTradeWindowForm.Helper;
 using System.Text.RegularExpressions;
 using RenTradeWindowForm.Properties;
+using System.Linq;
 
 namespace RenTradeWindowForm
 {
@@ -154,10 +155,52 @@ namespace RenTradeWindowForm
                     lblStatus.Text = "Test Mode";
                     lblRemarks.Text = (registry.PedalStatus) ? "For item pcs execution: " + registry.ProcessCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + "." : "Click 'Start' button to proceed";
 
+
+                    if(registry.ProcessStage == "A1")
+                    {
+                        stStripMenuItem.Enabled = btnStart.Enabled;
+                        tmStripMenuItem.Enabled = !btnStart.Enabled;
+                        ptStripMenuItem.Enabled = false;
+                        cmStripMenuItem.Enabled = false;
+                    }
+
+                    // 2 - validation if achieve test qty, 3 - Pull Test message confirmation, 5 - Pull Test message confirmation
+                    string[] stageArray1 = { "A2", "A3", "A5", 
+                                             "B1", "B2", "B3", "B5",
+                                             "C2", "C3", "C5" };
+                    if (stageArray1.Contains(registry.ProcessStage))
+                    {
+                        stStripMenuItem.Enabled = false;
+                        tmStripMenuItem.Enabled = true;
+                        ptStripMenuItem.Enabled = false;
+                        cmStripMenuItem.Enabled = false;
+                    }
+
+                    // 4 - Caliper Test
+                    string[] stageArray2 = { "A4", "B4", "C4"};
+                    if (stageArray2.Contains(registry.ProcessStage))
+                    {
+                        stStripMenuItem.Enabled = false;
+                        tmStripMenuItem.Enabled = true;
+                        ptStripMenuItem.Enabled = true;
+                        cmStripMenuItem.Enabled = true;
+                    }
+
+                    // 6 - Pull Test execution, 7 - Pull Test validation if no data within specific timeframe, Message Confirmation to back to execution
+                    string[] stageArray3 = { "A6", "A7", "A8",
+                                             "B6", "B7", "B8",
+                                             "C6", "C7", "C8" };
+                    if (stageArray3.Contains(registry.ProcessStage))
+                    {
+                        stStripMenuItem.Enabled = false;
+                        tmStripMenuItem.Enabled = true;
+                        ptStripMenuItem.Enabled = true;
+                        cmStripMenuItem.Enabled = false;
+                    }
+
                     // validation if achieve test qty
                     if (registry.ProcessStage == "A2" && !registry.PedalStatus)
                     {
-                        menuStrip.Enabled = false;
                         lblRemarks.Text = "For quantity validation";
 
                         DialogResult result = MessageBox.Show(_testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
@@ -190,7 +233,6 @@ namespace RenTradeWindowForm
                                 if (value <= registry.ProcessCounter)
                                 {
                                     lblRemarks.Text = "Pedal is in action";
-                                    menuStrip.Enabled = true;
 
                                     var counter1 = registry.ProcessCounter - value;
                                     registry.WriteRegistry("processCounter", counter1.ToString());
@@ -224,28 +266,6 @@ namespace RenTradeWindowForm
                     if (registry.ProcessStage == "A4")
                     {
                         lblRemarks.Text = "For caliper input";
-
-                    InputCaliper:
-                        string input = "";
-                        DialogBox.ShowInputDialogBox(ref input, "Please input caliper results.", "Message Confirmation", 300, 110);
-
-                        Regex regex = new(@"[^0-9^.^\;^\s*]");
-                        MatchCollection matches = regex.Matches(input);
-
-                        if (!String.IsNullOrEmpty(input) && matches.Count > 0)
-                        {
-                            menuStrip.Enabled = false;
-
-                            // set process stage to Pull test
-                            registry.WriteRegistry("processStage", "A5");
-                            // log results
-                            registry.TextLogger(DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            goto InputCaliper;
-                        }
                     }
 
                     // Pull Test message confirmation
@@ -274,7 +294,7 @@ namespace RenTradeWindowForm
                             MessageBox.Show("Please continue pull test execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
 
-                    // Message Confirmation to back to production
+                    // Message Confirmation to back to execution
                     if (registry.ProcessStage == "A8")
                     {
                         lblRemarks.Text = "For pull test input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
@@ -297,7 +317,6 @@ namespace RenTradeWindowForm
                     // validation if achieve test qty
                     if (registry.ProcessStage == "C2" && !registry.PedalStatus)
                     {
-                        menuStrip.Enabled = false;
                         lblRemarks.Text = "For daily quota validation";
                         MessageBox.Show(_quotaPcsMsg, "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -319,28 +338,6 @@ namespace RenTradeWindowForm
                     if (registry.ProcessStage == "C4")
                     {
                         lblRemarks.Text = "For caliper input";
-
-                    InputCaliper:
-                        string input = "";
-                        DialogBox.ShowInputDialogBox(ref input, "Please input caliper results.", "Message Confirmation", 300, 110);
-
-                        Regex regex = new(@"[^0-9^.^\;^\s*]");
-                        MatchCollection matches = regex.Matches(input);
-
-                        if (!String.IsNullOrEmpty(input) && matches.Count > 0)
-                        {
-                            menuStrip.Enabled = false;
-
-                            // set process stage to Pull test
-                            registry.WriteRegistry("processStage", "C5");
-                            // log results
-                            registry.TextLogger(DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            goto InputCaliper;
-                        }
                     }
 
                     // Pull Test message confirmation
@@ -369,7 +366,7 @@ namespace RenTradeWindowForm
                             MessageBox.Show("Please continue pull test execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
 
-                    // Message Confirmation to back to production
+                    // Message Confirmation to back to execution
                     if (registry.ProcessStage == "C8")
                     {
                         lblRemarks.Text = "For pull test input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
@@ -381,10 +378,10 @@ namespace RenTradeWindowForm
                     //*********************** End Daily Quota Section ***********************//
 
                     //*********************** Start Production Section ***********************//
+
                     // validation if achieve test qty
                     if (registry.ProcessStage == "B2" && !registry.PedalStatus)
                     {
-                        menuStrip.Enabled = false;
                         lblRemarks.Text = "For quantity validation";
 
                         DialogResult result = MessageBox.Show(_prodPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
@@ -422,7 +419,6 @@ namespace RenTradeWindowForm
                                 if (value <= registry.ProcessCounter && value != 0)
                                 {
                                     lblRemarks.Text = "Pedal is in action";
-                                    menuStrip.Enabled = true;
 
                                     var counter1 = registry.ProcessCounter - value;
                                     registry.WriteRegistry("processCounter", counter1.ToString());
@@ -462,28 +458,6 @@ namespace RenTradeWindowForm
                     if (registry.ProcessStage == "B4")
                     {
                         lblRemarks.Text = "For caliper input";
-
-                    InputCaliper:
-                        string input = "";
-                        DialogBox.ShowInputDialogBox(ref input, "Please input caliper results.", "Message Confirmation", 300, 110);
-
-                        Regex regex = new(@"[^0-9^.^\;^\s*]");
-                        MatchCollection matches = regex.Matches(input);
-
-                        if (!String.IsNullOrEmpty(input) && matches.Count > 0)
-                        {
-                            menuStrip.Enabled = false;
-
-                            // set process stage to Pull test
-                            registry.WriteRegistry("processStage", "B5");
-                            // log results
-                            registry.TextLogger(DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            goto InputCaliper;
-                        }
                     }
 
                     // Pull Test message confirmation
@@ -519,7 +493,6 @@ namespace RenTradeWindowForm
 
                         btnStart.Enabled = false;
                         btnTerminate.Enabled = false;
-                        menuStrip.Enabled = false;
 
                     InputEndJob:
                         DialogResult result = MessageBox.Show(_endJobMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
@@ -633,8 +606,8 @@ namespace RenTradeWindowForm
 
             stStripMenuItem.Enabled = false;
             tmStripMenuItem.Enabled = true;
-            ptStripMenuItem.Enabled = true;
-            cmStripMenuItem.Enabled = true;
+            ptStripMenuItem.Enabled = false;
+            cmStripMenuItem.Enabled = false;
             registry.WriteRegistry("pedalStatus", "True");
         }
 
@@ -667,7 +640,36 @@ namespace RenTradeWindowForm
 
         private void cmStripMenuItem_Click(object sender, EventArgs e)
         {
+            string input = "";
+            DialogBox.ShowInputDialogBox(ref input, "Please input caliper results.", "Message Confirmation", 300, 110);
 
+            Regex regex = new(@"[^0-9^.^\;^\s*]");
+            MatchCollection matches = regex.Matches(input);
+
+            if (!String.IsNullOrEmpty(input) && matches.Count > 0)
+            {
+                switch (registry.ProcessStage)
+                {
+                    case "A4":
+                        registry.WriteRegistry("processStage", "A5");
+                        break;
+                    case "B4":
+                        registry.WriteRegistry("processStage", "B5");
+                        break;
+                    case "C4":
+                        registry.WriteRegistry("processStage", "C5");
+                        break;
+                    default:
+                        break;
+                }
+
+                // log results
+                registry.TextLogger(DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input);
+            }
+            else
+            {
+                MessageBox.Show("Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void ptStripMenuItem_Click(object sender, EventArgs e)
@@ -717,7 +719,20 @@ namespace RenTradeWindowForm
 
                             // activate pedal to continue
                             registry.WriteRegistry("pedalStatus", "True");
-                            registry.WriteRegistry("processStage", "A1");
+                            switch (registry.ProcessStage)
+                            {
+                                case "A2":
+                                    registry.WriteRegistry("processStage", "A1");
+                                    break;
+                                case "B2":
+                                    registry.WriteRegistry("processStage", "B1");
+                                    break;
+                                case "C2":
+                                    registry.WriteRegistry("processStage", "C1");
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                         else
                         {
