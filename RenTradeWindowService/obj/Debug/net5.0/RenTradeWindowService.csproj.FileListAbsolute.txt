@@ -102,7 +102,6 @@ D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\ioBoardLib.
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\ioBoardLib.xml
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\LearCebuPAO_API.pdb
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\LearCebuPAO_API.xml
-D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.csprojAssemblyReference.cache
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.GeneratedMSBuildEditorConfig.editorconfig
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.AssemblyInfoInputs.cache
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.AssemblyInfo.cs
@@ -112,3 +111,12 @@ D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWin
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\ref\RenTradeWindowService.dll
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.pdb
 D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.genruntimeconfig.cache
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\obj\Debug\net5.0\RenTradeWindowService.csprojAssemblyReference.cache
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\System.IO.Ports.dll
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\linux-arm\native\libSystem.IO.Ports.Native.so
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\linux-arm64\native\libSystem.IO.Ports.Native.so
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\linux-x64\native\libSystem.IO.Ports.Native.so
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\osx-arm64\native\libSystem.IO.Ports.Native.dylib
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\osx-x64\native\libSystem.IO.Ports.Native.dylib
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\unix\lib\netstandard2.0\System.IO.Ports.dll
+D:\MyDev\GitHub\ioboardcensor\RenTradeWindowService\bin\Debug\net5.0\runtimes\win\lib\netstandard2.0\System.IO.Ports.dll
