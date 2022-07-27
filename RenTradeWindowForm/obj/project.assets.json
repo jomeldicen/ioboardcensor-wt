@@ -413,7 +413,7 @@
           "System.Security.Principal.Windows": "5.0.0"
         },
         "compile": {
-          "ref/netstandard2.0/_._": {}
+          "ref/netstandard2.0/Microsoft.Win32.Registry.dll": {}
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.Win32.Registry.dll": {}
@@ -422,6 +422,61 @@
           "runtimes/win/lib/netstandard2.0/Microsoft.Win32.Registry.dll": {
             "assetType": "runtime",
             "rid": "win"
+          }
+        }
+      },
+      "runtime.linux-arm.runtime.native.System.IO.Ports/6.0.0": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libSystem.IO.Ports.Native.so": {
+            "assetType": "native",
+            "rid": "linux-arm"
+          }
+        }
+      },
+      "runtime.linux-arm64.runtime.native.System.IO.Ports/6.0.0": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/linux-arm64/native/libSystem.IO.Ports.Native.so": {
+            "assetType": "native",
+            "rid": "linux-arm64"
+          }
+        }
+      },
+      "runtime.linux-x64.runtime.native.System.IO.Ports/6.0.0": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/libSystem.IO.Ports.Native.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          }
+        }
+      },
+      "runtime.native.System.IO.Ports/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "runtime.linux-arm.runtime.native.System.IO.Ports": "6.0.0",
+          "runtime.linux-arm64.runtime.native.System.IO.Ports": "6.0.0",
+          "runtime.linux-x64.runtime.native.System.IO.Ports": "6.0.0",
+          "runtime.osx-arm64.runtime.native.System.IO.Ports": "6.0.0",
+          "runtime.osx-x64.runtime.native.System.IO.Ports": "6.0.0"
+        }
+      },
+      "runtime.osx-arm64.runtime.native.System.IO.Ports/6.0.0": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/osx-arm64/native/libSystem.IO.Ports.Native.dylib": {
+            "assetType": "native",
+            "rid": "osx-arm64"
+          }
+        }
+      },
+      "runtime.osx-x64.runtime.native.System.IO.Ports/6.0.0": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/osx-x64/native/libSystem.IO.Ports.Native.dylib": {
+            "assetType": "native",
+            "rid": "osx-x64"
           }
         }
       },
@@ -568,6 +623,42 @@
           }
         }
       },
+      "System.IO.Ports/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Win32.Registry": "5.0.0",
+          "System.Memory": "4.5.4",
+          "runtime.native.System.IO.Ports": "6.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/System.IO.Ports.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.IO.Ports.dll": {}
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/unix/lib/netstandard2.0/System.IO.Ports.dll": {
+            "assetType": "runtime",
+            "rid": "unix"
+          },
+          "runtimes/win/lib/netstandard2.0/System.IO.Ports.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
+        }
+      },
+      "System.Memory/4.5.4": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.1/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/_._": {}
+        }
+      },
       "System.Security.AccessControl/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -575,7 +666,7 @@
           "System.Security.Principal.Windows": "5.0.0"
         },
         "compile": {
-          "ref/netstandard2.0/_._": {}
+          "ref/netstandard2.0/System.Security.AccessControl.dll": {}
         },
         "runtime": {
           "lib/netstandard2.0/System.Security.AccessControl.dll": {}
@@ -640,7 +731,8 @@
           "Experimental.System.Messaging": "1.1.0",
           "Microsoft.Extensions.Hosting": "5.0.0",
           "Microsoft.Extensions.Hosting.WindowsServices": "5.0.1",
-          "Serilog.AspNetCore": "5.0.0"
+          "Serilog.AspNetCore": "5.0.0",
+          "System.IO.Ports": "6.0.0"
         },
         "compile": {
           "bin/placeholder/RenTradeWindowService.dll": {}
@@ -1287,6 +1379,101 @@
         "version.txt"
       ]
     },
+    "runtime.linux-arm.runtime.native.System.IO.Ports/6.0.0": {
+      "sha512": "75q52H7CSpgIoIDwXb9o833EvBZIXJ0mdPhz1E6jSisEXUBlSCPalC29cj3EXsjpuDwr0dj1LRXZepIQH/oL4Q==",
+      "type": "package",
+      "path": "runtime.linux-arm.runtime.native.system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "runtime.linux-arm.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+        "runtime.linux-arm.runtime.native.system.io.ports.nuspec",
+        "runtimes/linux-arm/native/libSystem.IO.Ports.Native.so",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "runtime.linux-arm64.runtime.native.System.IO.Ports/6.0.0": {
+      "sha512": "xn2bMThmXr3CsvOYmS8ex2Yz1xo+kcnhVg2iVhS9PlmqjZPAkrEo/I40wjrBZH/tU4kvH0s1AE8opAvQ3KIS8g==",
+      "type": "package",
+      "path": "runtime.linux-arm64.runtime.native.system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "runtime.linux-arm64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+        "runtime.linux-arm64.runtime.native.system.io.ports.nuspec",
+        "runtimes/linux-arm64/native/libSystem.IO.Ports.Native.so",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "runtime.linux-x64.runtime.native.System.IO.Ports/6.0.0": {
+      "sha512": "16nbNXwv0sC+gLGIuecri0skjuh6R1maIJggsaNP7MQBcbVcEfWFUOkEnsnvoLEjy0XerfibuRptfQ8AmdIcWA==",
+      "type": "package",
+      "path": "runtime.linux-x64.runtime.native.system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "runtime.linux-x64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+        "runtime.linux-x64.runtime.native.system.io.ports.nuspec",
+        "runtimes/linux-x64/native/libSystem.IO.Ports.Native.so",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "runtime.native.System.IO.Ports/6.0.0": {
+      "sha512": "KaaXlpOcuZjMdmyF5wzzx3b+PRKIzt6A5Ax9dKenPDQbVJAFpev+casD0BIig1pBcbs3zx7CqWemzUJKAeHdSQ==",
+      "type": "package",
+      "path": "runtime.native.system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+        "runtime.native.system.io.ports.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "runtime.osx-arm64.runtime.native.System.IO.Ports/6.0.0": {
+      "sha512": "fXG12NodG1QrCdoaeSQ1gVnk/koi4WYY4jZtarMkZeQMyReBm1nZlSRoPnUjLr2ZR36TiMjpcGnQfxymieUe7w==",
+      "type": "package",
+      "path": "runtime.osx-arm64.runtime.native.system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "runtime.osx-arm64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+        "runtime.osx-arm64.runtime.native.system.io.ports.nuspec",
+        "runtimes/osx-arm64/native/libSystem.IO.Ports.Native.dylib",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "runtime.osx-x64.runtime.native.System.IO.Ports/6.0.0": {
+      "sha512": "/As+zPY49+dSUXkh+fTUbyPhqrdGN//evLxo4Vue88pfh1BHZgF7q4kMblTkxYvwR6Vi03zSYxysSFktO8/SDQ==",
+      "type": "package",
+      "path": "runtime.osx-x64.runtime.native.system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "runtime.osx-x64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+        "runtime.osx-x64.runtime.native.system.io.ports.nuspec",
+        "runtimes/osx-x64/native/libSystem.IO.Ports.Native.dylib",
+        "useSharedDesignerContext.txt"
+      ]
+    },
     "Serilog/2.10.0": {
       "sha512": "+QX0hmf37a0/OZLxM3wL7V6/ADvC1XihXN4Kq/p6d8lCPfgkRdiuhbWlMaFjR9Av0dy5F0+MBeDmDdRZN/YwQA==",
       "type": "package",
@@ -1491,6 +1678,62 @@
         "version.txt"
       ]
     },
+    "System.IO.Ports/6.0.0": {
+      "sha512": "dRyGI7fUESar5ZLIpiBOaaNLW7YyOBGftjj5Of+xcduC/Rjl7RjhEnWDvvNBmHuF3d0tdXoqdVI/yrVA8f00XA==",
+      "type": "package",
+      "path": "system.io.ports/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/netcoreapp2.0/System.IO.Ports.targets",
+        "buildTransitive/netcoreapp3.1/_._",
+        "lib/net461/System.IO.Ports.dll",
+        "lib/net461/System.IO.Ports.xml",
+        "lib/net6.0/System.IO.Ports.dll",
+        "lib/net6.0/System.IO.Ports.xml",
+        "lib/netstandard2.0/System.IO.Ports.dll",
+        "lib/netstandard2.0/System.IO.Ports.xml",
+        "runtimes/unix/lib/net6.0/System.IO.Ports.dll",
+        "runtimes/unix/lib/net6.0/System.IO.Ports.xml",
+        "runtimes/unix/lib/netstandard2.0/System.IO.Ports.dll",
+        "runtimes/unix/lib/netstandard2.0/System.IO.Ports.xml",
+        "runtimes/win/lib/net461/System.IO.Ports.dll",
+        "runtimes/win/lib/net461/System.IO.Ports.xml",
+        "runtimes/win/lib/net6.0/System.IO.Ports.dll",
+        "runtimes/win/lib/net6.0/System.IO.Ports.xml",
+        "runtimes/win/lib/netstandard2.0/System.IO.Ports.dll",
+        "runtimes/win/lib/netstandard2.0/System.IO.Ports.xml",
+        "system.io.ports.6.0.0.nupkg.sha512",
+        "system.io.ports.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Memory/4.5.4": {
+      "sha512": "1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw==",
+      "type": "package",
+      "path": "system.memory/4.5.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Memory.dll",
+        "lib/net461/System.Memory.xml",
+        "lib/netcoreapp2.1/_._",
+        "lib/netstandard1.1/System.Memory.dll",
+        "lib/netstandard1.1/System.Memory.xml",
+        "lib/netstandard2.0/System.Memory.dll",
+        "lib/netstandard2.0/System.Memory.xml",
+        "ref/netcoreapp2.1/_._",
+        "system.memory.4.5.4.nupkg.sha512",
+        "system.memory.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
     "System.Security.AccessControl/5.0.0": {
       "sha512": "dagJ1mHZO3Ani8GH0PHpPEe/oYO+rVdbQjvjJkBRNQkX4t0r1iaeGn8+/ybkSLEan3/slM0t59SVdHzuHf2jmw==",
       "type": "package",
@@ -1676,11 +1919,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+      "projectUniqueName": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
       "projectName": "RenTradeWindowForm",
-      "projectPath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+      "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
       "packagesPath": "C:\\Users\\jpdicen\\.nuget\\packages\\",
-      "outputPath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowForm\\obj\\",
+      "outputPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -1704,8 +1947,8 @@
         "net5.0-windows7.0": {
           "targetAlias": "net5.0-windows",
           "projectReferences": {
-            "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowService\\RenTradeWindowService.csproj": {
-              "projectPath": "D:\\MyDev\\RenTrade\\RenTradeWindowService\\RenTradeWindowService\\RenTradeWindowService.csproj"
+            "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj": {
+              "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj"
             }
           }
         }

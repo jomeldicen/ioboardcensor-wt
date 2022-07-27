@@ -38,6 +38,9 @@ namespace RenTradeWindowForm
             this.ptStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.abStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.tsStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsDateTimeLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -136,13 +139,37 @@ namespace RenTradeWindowForm
             this.cmStripMenuItem.Name = "cmStripMenuItem";
             this.cmStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.cmStripMenuItem.Text = "Caliper Entry";
+            this.cmStripMenuItem.Visible = false;
             this.cmStripMenuItem.Click += new System.EventHandler(this.cmStripMenuItem_Click);
             // 
             // helpStripMenuItem
             // 
+            this.helpStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rsStripMenuItem,
+            this.toolStripSeparator2,
+            this.abStripMenuItem});
             this.helpStripMenuItem.Name = "helpStripMenuItem";
             this.helpStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpStripMenuItem.Text = "Help";
+            // 
+            // rsStripMenuItem
+            // 
+            this.rsStripMenuItem.Name = "rsStripMenuItem";
+            this.rsStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.rsStripMenuItem.Text = "Reset IO";
+            this.rsStripMenuItem.Click += new System.EventHandler(this.rsStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(179, 6);
+            // 
+            // abStripMenuItem
+            // 
+            this.abStripMenuItem.Name = "abStripMenuItem";
+            this.abStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.abStripMenuItem.Text = "About PAO Interface";
+            this.abStripMenuItem.Click += new System.EventHandler(this.abStripMenuItem_Click);
             // 
             // statusStrip
             // 
@@ -420,6 +447,7 @@ namespace RenTradeWindowForm
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
+            this.ShowInTaskbar = false;
             this.Text = "RenTrade Services";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -474,6 +502,9 @@ namespace RenTradeWindowForm
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Button btnTerminate;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem rsStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem abStripMenuItem;
     }
 }
 

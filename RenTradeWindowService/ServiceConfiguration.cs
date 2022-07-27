@@ -28,5 +28,6 @@ namespace RenTradeWindowService
         public int MidPcsInitCount { get; set; }
         public int LastPcsInitCount { get; set; }
         public int QuotaInitCount { get; set; }
+        public string TestJobNos { get; set; }
     }
 }
