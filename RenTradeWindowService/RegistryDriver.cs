@@ -26,6 +26,7 @@ namespace RenTradeWindowService
         public bool ReelStatus { get; private set; }
 
         public string IOBoardStatus { get; private set; }
+        public string OldOrderNos { get; private set; }
 
         private readonly string _logPath;
 
@@ -39,14 +40,14 @@ namespace RenTradeWindowService
         private void InitializeRegistry()
         {
             ////opening the subkey  
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\RenTradeSettings");
+            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\RenTradeSettings");
 
             //if it does exist, set key values
             if (key == null)
             {
-                //accessing the CurrentUser root element  
+                //accessing the LocalMachine root element  
                 //and adding "OurSettings" subkey to the "SOFTWARE" subkey  
-                this.key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\RenTradeSettings");
+                this.key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\RenTradeSettings");
 
                 //storing the values  
                 key.SetValue("pedalFlag", "0");                 // 1 means hit, 0 means loose
@@ -72,7 +73,7 @@ namespace RenTradeWindowService
             try
             {
                 //opening the subkey  
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\RenTradeSettings");
+                RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\RenTradeSettings");
 
                 //if it does exist, retrieve the stored values  
                 if (key != null)
@@ -90,6 +91,7 @@ namespace RenTradeWindowService
                     this.ReelStatus = Convert.ToBoolean(key.GetValue("reelStatus"));                        // Check Reel Status
 
                     this.IOBoardStatus = key.GetValue("ioBoardStatus").ToString();
+                    this.OldOrderNos = key.GetValue("oldOrderNos").ToString();
 
                     key.Close();
                 }
@@ -104,8 +106,8 @@ namespace RenTradeWindowService
         {
             try
             {
-                //accessing the CurrentUser root element and adding "RenTradeSettings" subkey to the "SOFTWARE" subkey  
-                this.key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\RenTradeSettings");
+                //accessing the LocalMachine root element and adding "RenTradeSettings" subkey to the "SOFTWARE" subkey  
+                this.key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\RenTradeSettings");
 
                 //storing the values  
                 key.SetValue(settingName, settingVal);
@@ -128,7 +130,7 @@ namespace RenTradeWindowService
             this.WriteRegistry("processStage", "A1");
 
             this.WriteRegistry("reelStatus", "True");
-            this.WriteRegistry("ioBoardStatus", "");
+            this.WriteRegistry("ioBoardStatus", "X0");
         }
 
         public void ErrorLogger(string message)
@@ -137,10 +139,10 @@ namespace RenTradeWindowService
             File.AppendAllLines(this.@_logPath + "ErrorLogs.txt", this.logs);
         }
 
-        public void TextLogger(string message)
+        public void TextLogger(string filename, string message)
         {
             string[] lines = new string[] { message.ToString() };
-            File.AppendAllLines(this.@_logPath + "DataLogs.txt", lines);
+            File.AppendAllLines(this.@_logPath + "datalogs-" + filename + ".txt", lines);
         }
     }
 }

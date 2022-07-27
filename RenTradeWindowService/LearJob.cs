@@ -15,13 +15,13 @@ namespace RenTradeWindowService
 
         public string JobInfo { get; private set; }
         public string OrderNumber { get; private set; }
-        public string OldOrderNos { get; private set; }
         public string LeadSet { get; private set; }
         public int JobQty { get; private set; }
         public int BundleSize { get; private set; }
 
         private readonly string _environmentMode;
         private readonly string _machineName;
+        private readonly string _testJobNos;
 
         public LearJob(IOptions<ServiceConfiguration> options)
         {
@@ -30,6 +30,7 @@ namespace RenTradeWindowService
 
             _environmentMode = options.Value.EnvironmentMode;
             _machineName = options.Value.MachineName;
+            _testJobNos = options.Value.TestJobNos;
 
             GetJobStarted();
         }
@@ -38,7 +39,7 @@ namespace RenTradeWindowService
         {
             try
             {
-                JobInfo = "123456789:::10348177:::20:::10";
+                JobInfo = _testJobNos;
 
                 // Production Mode
                 if (_environmentMode == "PRD")
@@ -57,6 +58,14 @@ namespace RenTradeWindowService
                     BundleSize = Convert.ToInt16(tokens[3]);
 
                     registry.WriteRegistry("jobInfo", JobInfo);
+
+                    // if current order nos is different on old order nos
+                    registry.ReadRegistry();
+                    if (!String.IsNullOrWhiteSpace(registry.OldOrderNos))
+                    {
+                        if (!OrderNumber.Equals(registry.OldOrderNos) && registry.ProcessStage == "B8")
+                            registry.WriteRegistry("quotaCounter", "0");
+                    }
                 }
                 else
                 {
@@ -105,10 +114,6 @@ namespace RenTradeWindowService
             if (isPaoJobFinished)
             {
                 registry.WriteRegistry("oldOrderNos", OrderNumber);
-
-                if (OrderNumber.Equals(OldOrderNos))
-                    registry.WriteRegistry("quotaCounter", "0");
-
                 registry.ResetRegistry();
             }
         }
