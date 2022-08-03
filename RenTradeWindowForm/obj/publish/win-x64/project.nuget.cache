@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ZuZZmQBEw/pZqm96W9t8UNAR7nfOXqycL6P0s13uW1+QOck48mVMGN3paUiYqMU/Fhv8mhUc482XWH2n8jGbSQ==",
+  "dgSpecHash": "7G8kF5VIJlCIn5kOQKQCom0BDEVsUTd5PBhWJnnULiaDCGjI/rOsznBxq9SlgziC5xA/qqKNIxGaLH01hI+U3w==",
   "success": true,
   "projectFilePath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
   "expectedPackageFiles": [
@@ -49,8 +49,10 @@
     "C:\\Users\\jpdicen\\.nuget\\packages\\serilog.sinks.console\\4.0.1\\serilog.sinks.console.4.0.1.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\serilog.sinks.debug\\2.0.0\\serilog.sinks.debug.2.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\serilog.sinks.file\\5.0.0\\serilog.sinks.file.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.diagnostics.eventlog\\5.0.0\\system.diagnostics.eventlog.5.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.io.ports\\6.0.0\\system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.management\\6.0.0\\system.management.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.security.accesscontrol\\5.0.0\\system.security.accesscontrol.5.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",

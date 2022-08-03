@@ -10,7 +10,7 @@ namespace RenTradeWindowService
 {
     public class LearJob
     {
-        private LearCebuPAO_API.LearCebuPAO_API OLearCebuPAOapi;
+        private LearCebuPAO_API.LearCebuPAO_API OLearCebuPAOapi = new LearCebuPAO_API.LearCebuPAO_API();
         private RegistryDriver registry;
 
         public string JobInfo { get; private set; }

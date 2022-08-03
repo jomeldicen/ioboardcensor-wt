@@ -86,3 +86,4 @@ E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\Ren
 E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\ref\RenTradeWindowService.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\RenTradeWindowService.pdb
 E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\RenTradeWindowService.genruntimeconfig.cache
+E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\RenTradeWindowService.csproj.AssemblyReference.cache

@@ -89,15 +89,11 @@ E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-window
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\runtimes\unix\lib\netstandard2.0\System.IO.Ports.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\runtimes\win\lib\netstandard2.0\System.IO.Ports.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\runtimes\win\lib\netstandard2.0\System.ServiceProcess.ServiceController.dll
-E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\LicenseChecker.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\RenTradeWindowService.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\LearCebuPAO_API.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\ioBoardLib.dll
-E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\Ionic.Zip.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\MySql.Data.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\RenTradeWindowService.pdb
-E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\LicenseChecker.pdb
-E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\LicenseChecker.xml
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\LearCebuPAO_API.pdb
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\LearCebuPAO_API.xml
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\ioBoardLib.pdb
@@ -116,3 +112,8 @@ E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\obj\Release\net5.0-window
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\obj\Release\net5.0-windows\ref\RenTradeWindowForm.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\obj\Release\net5.0-windows\RenTradeWindowForm.pdb
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\obj\Release\net5.0-windows\RenTradeWindowForm.genruntimeconfig.cache
+E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\System.CodeDom.dll
+E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\System.Management.dll
+E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\runtimes\win\lib\netcoreapp3.1\System.Management.dll
+E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Release\net5.0-windows\FoxLearn.License.dll
+E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\obj\Release\net5.0-windows\RenTradeWindowForm.LicenseRegForm.resources
