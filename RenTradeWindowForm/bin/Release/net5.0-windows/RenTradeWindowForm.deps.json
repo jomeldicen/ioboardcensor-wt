@@ -9,7 +9,8 @@
       "RenTradeWindowForm/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Hosting": "5.0.0",
-          "RenTradeWindowService": "1.0.0"
+          "RenTradeWindowService": "1.0.0",
+          "LicenseChecker": "1.0.0.0"
         },
         "runtime": {
           "RenTradeWindowForm.dll": {}
@@ -470,6 +471,14 @@
           "RenTradeWindowService.dll": {}
         }
       },
+      "LicenseChecker/1.0.0.0": {
+        "runtime": {
+          "LicenseChecker.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "LearCebuPAO_API/1.0.0.0": {
         "runtime": {
           "LearCebuPAO_API.dll": {
@@ -483,6 +492,14 @@
           "ioBoardLib.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Ionic.Zip/1.9.1.8": {
+        "runtime": {
+          "Ionic.Zip.dll": {
+            "assemblyVersion": "1.9.1.8",
+            "fileVersion": "1.9.1.8"
           }
         }
       },
@@ -871,12 +888,22 @@
       "serviceable": false,
       "sha512": ""
     },
+    "LicenseChecker/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "LearCebuPAO_API/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
     "ioBoardLib/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Ionic.Zip/1.9.1.8": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

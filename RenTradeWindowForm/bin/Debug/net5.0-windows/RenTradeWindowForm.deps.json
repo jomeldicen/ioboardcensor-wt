@@ -9,7 +9,9 @@
       "RenTradeWindowForm/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Hosting": "5.0.0",
-          "RenTradeWindowService": "1.0.0"
+          "RenTradeWindowService": "1.0.0",
+          "System.Management": "6.0.0",
+          "FoxLearn.License": "1.0.0.0"
         },
         "runtime": {
           "RenTradeWindowForm.dll": {}
@@ -396,6 +398,14 @@
           }
         }
       },
+      "System.CodeDom/6.0.0": {
+        "runtime": {
+          "lib/netstandard2.0/System.CodeDom.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
       "System.Diagnostics.EventLog/5.0.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
@@ -426,6 +436,26 @@
             "rid": "win",
             "assetType": "runtime",
             "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Management/6.0.0": {
+        "dependencies": {
+          "Microsoft.Win32.Registry": "5.0.0",
+          "System.CodeDom": "6.0.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/System.Management.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netcoreapp3.1/System.Management.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.0",
             "fileVersion": "6.0.21.52210"
           }
         }
@@ -468,6 +498,14 @@
         },
         "runtime": {
           "RenTradeWindowService.dll": {}
+        }
+      },
+      "FoxLearn.License/1.0.0.0": {
+        "runtime": {
+          "FoxLearn.License.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "LearCebuPAO_API/1.0.0.0": {
@@ -817,6 +855,13 @@
       "path": "serilog.sinks.file/5.0.0",
       "hashPath": "serilog.sinks.file.5.0.0.nupkg.sha512"
     },
+    "System.CodeDom/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA==",
+      "path": "system.codedom/6.0.0",
+      "hashPath": "system.codedom.6.0.0.nupkg.sha512"
+    },
     "System.Diagnostics.EventLog/5.0.0": {
       "type": "package",
       "serviceable": true,
@@ -830,6 +875,13 @@
       "sha512": "sha512-dRyGI7fUESar5ZLIpiBOaaNLW7YyOBGftjj5Of+xcduC/Rjl7RjhEnWDvvNBmHuF3d0tdXoqdVI/yrVA8f00XA==",
       "path": "system.io.ports/6.0.0",
       "hashPath": "system.io.ports.6.0.0.nupkg.sha512"
+    },
+    "System.Management/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sHsESYMmPDhQuOC66h6AEOs/XowzKsbT9srMbX71TCXP58hkpn1BqBjdmKj1+DCA/WlBETX1K5WjQHwmV0Txrg==",
+      "path": "system.management/6.0.0",
+      "hashPath": "system.management.6.0.0.nupkg.sha512"
     },
     "System.Memory/4.5.4": {
       "type": "package",
@@ -868,6 +920,11 @@
     },
     "RenTradeWindowService/1.0.0": {
       "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FoxLearn.License/1.0.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     },

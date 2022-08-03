@@ -65,6 +65,7 @@ namespace RenTradeWindowForm
             this.btnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblMachineName = new System.Windows.Forms.Label();
+            this.lcStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -147,7 +148,8 @@ namespace RenTradeWindowForm
             this.helpStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rsStripMenuItem,
             this.toolStripSeparator2,
-            this.abStripMenuItem});
+            this.abStripMenuItem,
+            this.lcStripMenuItem});
             this.helpStripMenuItem.Name = "helpStripMenuItem";
             this.helpStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpStripMenuItem.Text = "Help";
@@ -253,7 +255,7 @@ namespace RenTradeWindowForm
             this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label6.Location = new System.Drawing.Point(139, 23);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(70, 13);
+            this.label6.Size = new System.Drawing.Size(69, 13);
             this.label6.TabIndex = 4;
             this.label6.Text = "Daily Target:";
             // 
@@ -435,6 +437,13 @@ namespace RenTradeWindowForm
             this.lblMachineName.Text = "XXX-00-0000";
             this.lblMachineName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // lcStripMenuItem
+            // 
+            this.lcStripMenuItem.Name = "lcStripMenuItem";
+            this.lcStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.lcStripMenuItem.Text = "License Registration";
+            this.lcStripMenuItem.Click += new System.EventHandler(this.lcStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -505,6 +514,7 @@ namespace RenTradeWindowForm
         private System.Windows.Forms.ToolStripMenuItem rsStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem abStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lcStripMenuItem;
     }
 }
 

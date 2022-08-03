@@ -29,7 +29,7 @@ namespace RenTradeWindowService
             registry = new RegistryDriver(options);
 
             _environmentMode = options.Value.EnvironmentMode;
-            _machineName = options.Value.MachineName;
+            _machineName = String.IsNullOrEmpty(options.Value.MachineName) ? Environment.MachineName : options.Value.MachineName;
             _testJobNos = options.Value.TestJobNos;
 
             GetJobStarted();

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="System.Management" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +38,12 @@
 
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FoxLearn.License">
+      <HintPath>C:\Users\jpdicen\Downloads\LicenseKey\LicenseKey\bin\Debug\FoxLearn.License.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
