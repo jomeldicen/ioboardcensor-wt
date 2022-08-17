@@ -15,6 +15,7 @@ namespace RenTradeWindowService
 {
     public class MainWorker : BackgroundService
     {
+        private LearCebuPAO_API.LearCebuPAO_API OLearCebuPAOapi = new LearCebuPAO_API.LearCebuPAO_API();
         private readonly ILogger<MainWorker> _logger;
         private readonly IOptions<ServiceConfiguration> _options;
         private ioBoardLib.ioBoardLib oIOBoard = new ioBoardLib.ioBoardLib();
@@ -152,6 +153,16 @@ namespace RenTradeWindowService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            try
+            {
+                String JobInfo = OLearCebuPAOapi.GetJobStarted();
+                _logger.LogInformation(JobInfo.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Read Current Registry Config
@@ -512,6 +523,10 @@ namespace RenTradeWindowService
                         registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+
             }
             finally
             {

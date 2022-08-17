@@ -10,7 +10,7 @@ namespace RenTradeWindowService
 {
     public class LearJob
     {
-        private LearCebuPAO_API.LearCebuPAO_API OLearCebuPAOapi;
+        private LearCebuPAO_API.LearCebuPAO_API OLearCebuPAOapi = new LearCebuPAO_API.LearCebuPAO_API();
         private RegistryDriver registry;
 
         public string JobInfo { get; private set; }
@@ -29,7 +29,7 @@ namespace RenTradeWindowService
             registry = new RegistryDriver(options);
 
             _environmentMode = options.Value.EnvironmentMode;
-            _machineName = options.Value.MachineName;
+            _machineName = String.IsNullOrEmpty(options.Value.MachineName) ? Environment.MachineName : options.Value.MachineName;
             _testJobNos = options.Value.TestJobNos;
 
             GetJobStarted();
@@ -44,8 +44,11 @@ namespace RenTradeWindowService
                 // Production Mode
                 if (_environmentMode == "PRD")
                 {
-                    JobInfo = OLearCebuPAOapi.GetJobStarted(_machineName);
+                    JobInfo = OLearCebuPAOapi.GetJobStarted();
                 }
+
+
+                registry.ErrorLogger(_environmentMode + ": " + _machineName + ": " + JobInfo.ToString());
 
                 string[] stringSeparators = new string[] { ":::" };
                 if (!String.IsNullOrEmpty(JobInfo) && JobInfo != "ErrorDB")

@@ -5,6 +5,7 @@ using Serilog;
 using Serilog.Events;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Text;
 
 namespace RenTradeWindowService
 {
@@ -12,6 +13,7 @@ namespace RenTradeWindowService
     {
         public static void Main(string[] args)
         {
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -41,6 +43,7 @@ namespace RenTradeWindowService
                 .UseWindowsService()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                     var env = hostingContext.HostingEnvironment;
 
                     // find the shared folder in the parent folder

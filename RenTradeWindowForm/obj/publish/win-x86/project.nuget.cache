@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yW77eUuI1vMT//BSXIYoRhDLr1X15QWi3sI9ibyamFquTF5ssWujy1tSOl4hNyz1Ti1pFBw1N5uGBOci3IHXlw==",
+  "dgSpecHash": "4PkxoL6tjF9CkMzEbou0rGKhzGXNocFxtRogERgRF9p9vLFwzoV3hXT5u3ZeVaxGwxGlZKdqItosEHSWa3LzYA==",
   "success": true,
-  "projectFilePath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+  "projectFilePath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jpdicen\\.nuget\\packages\\experimental.system.messaging\\1.1.0\\experimental.system.messaging.1.1.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.extensions.configuration\\5.0.0\\microsoft.extensions.configuration.5.0.0.nupkg.sha512",
@@ -34,6 +34,7 @@
     "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\runtime.linux-arm.runtime.native.system.io.ports\\6.0.0\\runtime.linux-arm.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\runtime.linux-arm64.runtime.native.system.io.ports\\6.0.0\\runtime.linux-arm64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\runtime.linux-x64.runtime.native.system.io.ports\\6.0.0\\runtime.linux-x64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
@@ -49,16 +50,25 @@
     "C:\\Users\\jpdicen\\.nuget\\packages\\serilog.sinks.console\\4.0.1\\serilog.sinks.console.4.0.1.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\serilog.sinks.debug\\2.0.0\\serilog.sinks.debug.2.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\serilog.sinks.file\\5.0.0\\serilog.sinks.file.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.diagnostics.eventlog\\5.0.0\\system.diagnostics.eventlog.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.io.ports\\6.0.0\\system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.management\\6.0.0\\system.management.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
-    "C:\\Users\\jpdicen\\.nuget\\packages\\system.security.accesscontrol\\5.0.0\\system.security.accesscontrol.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.security.accesscontrol\\6.0.0\\system.security.accesscontrol.6.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.security.permissions\\6.0.0\\system.security.permissions.6.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.serviceprocess.servicecontroller\\5.0.0\\system.serviceprocess.servicecontroller.5.0.0.nupkg.sha512",
     "C:\\Users\\jpdicen\\.nuget\\packages\\system.text.json\\4.6.0\\system.text.json.4.6.0.nupkg.sha512",
-    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x86\\5.0.6\\microsoft.netcore.app.runtime.win-x86.5.0.6.nupkg.sha512",
-    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x86\\5.0.6\\microsoft.windowsdesktop.app.runtime.win-x86.5.0.6.nupkg.sha512",
-    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x86\\5.0.6\\microsoft.aspnetcore.app.runtime.win-x86.5.0.6.nupkg.sha512"
+    "C:\\Users\\jpdicen\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.netcore.app.ref\\5.0.0\\microsoft.netcore.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\5.0.0\\microsoft.windowsdesktop.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\5.0.0\\microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x86\\5.0.17\\microsoft.netcore.app.runtime.win-x86.5.0.17.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x86\\5.0.17\\microsoft.windowsdesktop.app.runtime.win-x86.5.0.17.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x86\\5.0.17\\microsoft.aspnetcore.app.runtime.win-x86.5.0.17.nupkg.sha512",
+    "C:\\Users\\jpdicen\\.nuget\\packages\\microsoft.netcore.app.host.win-x86\\5.0.17\\microsoft.netcore.app.host.win-x86.5.0.17.nupkg.sha512"
   ],
   "logs": []
 }

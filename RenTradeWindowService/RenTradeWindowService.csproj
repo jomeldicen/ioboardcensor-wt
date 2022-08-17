@@ -14,22 +14,26 @@
 
   <ItemGroup>
     <PackageReference Include="Experimental.System.Messaging" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.26" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.26" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MySql.Data" Version="6.10.9" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+    <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ioBoardLib">
-      <HintPath>..\..\..\..\My Files\RenTrade\dll\YF8032demoApplet\bin\Debug\net6.0-windows\ioBoardLib.dll</HintPath>
+      <HintPath>..\..\..\API\RenTrade\ioBoardLib.dll</HintPath>
     </Reference>
     <Reference Include="LearCebuPAO_API">
-      <HintPath>..\..\..\RenTrade\Backup RenTrade\SignalControllerV3\RenTradeServices\bin\Debug\LearCebuPAO_API.dll</HintPath>
+      <HintPath>..\..\..\API\RenTrade\LearCebuPAO_API.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
