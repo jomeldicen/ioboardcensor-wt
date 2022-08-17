@@ -1,0 +1,15 @@
+2022-08-12 14:34:17.702 +08:00 [FTL] There was a problem starting the service
+System.TypeInitializationException: The type initializer for 'MySql.Data.MySqlClient.Replication.ReplicationManager' threw an exception.
+ ---> System.IO.FileNotFoundException: Could not load file or assembly 'System.Configuration.ConfigurationManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. The system cannot find the file specified.
+File name: 'System.Configuration.ConfigurationManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+   at MySql.Data.MySqlClient.Replication.ReplicationManager..cctor()
+   --- End of inner exception stack trace ---
+   at MySql.Data.MySqlClient.Replication.ReplicationManager.IsReplicationGroup(String groupName)
+   at MySql.Data.MySqlClient.MySqlConnection.Open()
+   at LearCebuPAO_API.LearCebuPAO_API.GetJobStarted(String sHostName, String sEnvironment) in C:\WorkingDir\VBnet\ADLCANCtrl\ADLCANCtrl\LearCebuPAO_API.vb:line 94
+   at RenTradeWindowService.MainWorker.ExecuteAsync(CancellationToken stoppingToken) in E:\Development\GitHub\ioboardcensor\RenTradeWindowService\MainWorker.cs:line 159
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at RenTradeWindowService.Program.Main(String[] args) in E:\Development\GitHub\ioboardcensor\RenTradeWindowService\Program.cs:line 25

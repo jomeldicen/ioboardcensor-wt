@@ -24,7 +24,7 @@ namespace DemoWorker
             {
                 try
                 {
-                    String JobInfo = OLearCebuPAOapi.GetJobStarted("GAB-20-5482");
+                    String JobInfo = OLearCebuPAOapi.GetJobStarted();
                     _logger.LogInformation("Job Information: {x}", JobInfo);
                 }
                 catch (Exception ex)

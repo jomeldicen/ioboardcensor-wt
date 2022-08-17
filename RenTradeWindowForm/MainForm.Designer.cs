@@ -41,6 +41,7 @@ namespace RenTradeWindowForm
             this.rsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.abStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lcStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.tsStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsDateTimeLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -65,7 +66,6 @@ namespace RenTradeWindowForm
             this.btnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblMachineName = new System.Windows.Forms.Label();
-            this.lcStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -90,7 +90,7 @@ namespace RenTradeWindowForm
             this.helpStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(316, 24);
+            this.menuStrip.Size = new System.Drawing.Size(309, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -173,6 +173,13 @@ namespace RenTradeWindowForm
             this.abStripMenuItem.Text = "About PAO Interface";
             this.abStripMenuItem.Click += new System.EventHandler(this.abStripMenuItem_Click);
             // 
+            // lcStripMenuItem
+            // 
+            this.lcStripMenuItem.Name = "lcStripMenuItem";
+            this.lcStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.lcStripMenuItem.Text = "License Registration";
+            this.lcStripMenuItem.Click += new System.EventHandler(this.lcStripMenuItem_Click);
+            // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -181,7 +188,7 @@ namespace RenTradeWindowForm
             this.statusStrip.Location = new System.Drawing.Point(0, 520);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.statusStrip.Size = new System.Drawing.Size(316, 22);
+            this.statusStrip.Size = new System.Drawing.Size(309, 22);
             this.statusStrip.TabIndex = 4;
             this.statusStrip.Text = "statusStrip";
             // 
@@ -198,7 +205,7 @@ namespace RenTradeWindowForm
             // 
             this.tsDateTimeLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tsDateTimeLabel.Name = "tsDateTimeLabel";
-            this.tsDateTimeLabel.Size = new System.Drawing.Size(285, 17);
+            this.tsDateTimeLabel.Size = new System.Drawing.Size(278, 17);
             this.tsDateTimeLabel.Spring = true;
             this.tsDateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.tsDateTimeLabel.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -224,18 +231,18 @@ namespace RenTradeWindowForm
             // lblBatchTarget
             // 
             this.lblBatchTarget.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblBatchTarget.Location = new System.Drawing.Point(214, 44);
+            this.lblBatchTarget.Location = new System.Drawing.Point(220, 44);
             this.lblBatchTarget.Name = "lblBatchTarget";
-            this.lblBatchTarget.Size = new System.Drawing.Size(55, 13);
+            this.lblBatchTarget.Size = new System.Drawing.Size(50, 13);
             this.lblBatchTarget.TabIndex = 7;
             this.lblBatchTarget.Text = "0";
             // 
             // lblDailyTarget
             // 
             this.lblDailyTarget.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblDailyTarget.Location = new System.Drawing.Point(214, 23);
+            this.lblDailyTarget.Location = new System.Drawing.Point(220, 23);
             this.lblDailyTarget.Name = "lblDailyTarget";
-            this.lblDailyTarget.Size = new System.Drawing.Size(55, 13);
+            this.lblDailyTarget.Size = new System.Drawing.Size(50, 13);
             this.lblDailyTarget.TabIndex = 6;
             this.lblDailyTarget.Text = "0";
             // 
@@ -243,21 +250,21 @@ namespace RenTradeWindowForm
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(139, 44);
+            this.label7.Location = new System.Drawing.Point(135, 44);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(73, 13);
+            this.label7.Size = new System.Drawing.Size(70, 13);
             this.label7.TabIndex = 5;
-            this.label7.Text = "Batch Target:";
+            this.label7.Text = "Bundle Size:";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label6.Location = new System.Drawing.Point(139, 23);
+            this.label6.Location = new System.Drawing.Point(135, 23);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(69, 13);
+            this.label6.Size = new System.Drawing.Size(87, 13);
             this.label6.TabIndex = 4;
-            this.label6.Text = "Daily Target:";
+            this.label6.Text = "Order Quantity:";
             // 
             // lblOrderNos
             // 
@@ -382,7 +389,7 @@ namespace RenTradeWindowForm
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 24);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(316, 496);
+            this.panel1.Size = new System.Drawing.Size(309, 496);
             this.panel1.TabIndex = 5;
             // 
             // btnTerminate
@@ -437,24 +444,19 @@ namespace RenTradeWindowForm
             this.lblMachineName.Text = "XXX-00-0000";
             this.lblMachineName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // lcStripMenuItem
-            // 
-            this.lcStripMenuItem.Name = "lcStripMenuItem";
-            this.lcStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.lcStripMenuItem.Text = "License Registration";
-            this.lcStripMenuItem.Click += new System.EventHandler(this.lcStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(316, 542);
+            this.ClientSize = new System.Drawing.Size(309, 542);
             this.ControlBox = false;
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "MainForm";
             this.ShowInTaskbar = false;
             this.Text = "RenTrade Services";

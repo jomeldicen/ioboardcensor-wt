@@ -50,11 +50,11 @@
             },
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
-              "version": "[5.0.0, )"
+              "version": "[3.1.26, )"
             },
             "Microsoft.Extensions.Hosting.WindowsServices": {
               "target": "Package",
-              "version": "[5.0.1, )"
+              "version": "[3.1.26, )"
             },
             "Microsoft.NETFramework.ReferenceAssemblies": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -62,11 +62,27 @@
               "target": "Package",
               "version": "[1.0.2, )"
             },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[6.10.9, )"
+            },
             "Serilog.AspNetCore": {
               "target": "Package",
               "version": "[5.0.0, )"
             },
             "System.IO.Ports": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "System.Security.Permissions": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "System.Text.Encoding": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "System.Text.Encoding.CodePages": {
               "target": "Package",
               "version": "[6.0.0, )"
             }
@@ -87,10 +103,6 @@
               "version": "[5.0.0, 5.0.0]"
             },
             {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[5.0.17, 5.0.17]"
-            },
-            {
               "name": "Microsoft.NETCore.App.Host.win-x64",
               "version": "[5.0.17, 5.0.17]"
             },
@@ -99,16 +111,8 @@
               "version": "[5.0.0, 5.0.0]"
             },
             {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[5.0.17, 5.0.17]"
-            },
-            {
               "name": "Microsoft.WindowsDesktop.App.Ref",
               "version": "[5.0.0, 5.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[5.0.17, 5.0.17]"
             }
           ],
           "frameworkReferences": {
@@ -117,11 +121,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     }

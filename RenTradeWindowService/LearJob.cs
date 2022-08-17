@@ -44,8 +44,11 @@ namespace RenTradeWindowService
                 // Production Mode
                 if (_environmentMode == "PRD")
                 {
-                    JobInfo = OLearCebuPAOapi.GetJobStarted(_machineName);
+                    JobInfo = OLearCebuPAOapi.GetJobStarted();
                 }
+
+
+                registry.ErrorLogger(_environmentMode + ": " + _machineName + ": " + JobInfo.ToString());
 
                 string[] stringSeparators = new string[] { ":::" };
                 if (!String.IsNullOrEmpty(JobInfo) && JobInfo != "ErrorDB")

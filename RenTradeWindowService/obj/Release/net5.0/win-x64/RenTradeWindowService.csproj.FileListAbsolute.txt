@@ -772,3 +772,6 @@ E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\win
 E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\win-x64\ref\RenTradeWindowService.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\win-x64\RenTradeWindowService.pdb
 E:\Development\GitHub\ioboardcensor\RenTradeWindowService\obj\Release\net5.0\win-x64\RenTradeWindowService.genruntimeconfig.cache
+E:\Development\GitHub\ioboardcensor\RenTradeWindowService\bin\Release\net5.0\win-x64\MySql.Data.dll
+E:\Development\GitHub\ioboardcensor\RenTradeWindowService\bin\Release\net5.0\win-x64\System.Configuration.ConfigurationManager.dll
+E:\Development\GitHub\ioboardcensor\RenTradeWindowService\bin\Release\net5.0\win-x64\System.Security.Cryptography.ProtectedData.dll

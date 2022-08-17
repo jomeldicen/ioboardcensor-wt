@@ -91,8 +91,42 @@ namespace RenTradeWindowForm
             backgroundWorker.RunWorkerAsync();
         }
 
-        private bool GetLearInformation()
+        //private bool GetLearInformation()
+        //{
+        //    learjob = new LearJob(_options);
+
+        //    lblLeadSet.Text = learjob.LeadSet;
+        //    lblOrderNos.Text = learjob.OrderNumber;
+        //    lblDailyTarget.Text = learjob.JobQty.ToString();
+        //    lblBatchTarget.Text = learjob.BundleSize.ToString();
+        //    lblMachineName.Text = _machineName;
+
+        //    // Clear and Disable controls if no active job loaded
+        //    if (String.IsNullOrEmpty(learjob.OrderNumber))
+        //    {
+        //        lblLeadSet.Text = "n/a";
+        //        lblOrderNos.Text = "n/a";
+
+        //        btnStart.Enabled = false;
+        //        btnTerminate.Enabled = false;
+
+        //        stStripMenuItem.Enabled = false;
+        //        tmStripMenuItem.Enabled = false;
+        //        ptStripMenuItem.Enabled = false;
+        //        cmStripMenuItem.Enabled = false;
+
+        //        lblStatus.Text = "No Active JO";
+        //        lblRemarks.Text = "Ongoing checking...";
+
+        //        return false;
+        //    }
+
+        //    return true;
+        //}
+
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            // get Job Information
             learjob = new LearJob(_options);
 
             lblLeadSet.Text = learjob.LeadSet;
@@ -102,7 +136,7 @@ namespace RenTradeWindowForm
             lblMachineName.Text = _machineName;
 
             // Clear and Disable controls if no active job loaded
-            if(String.IsNullOrEmpty(learjob.OrderNumber))
+            if (String.IsNullOrEmpty(learjob.OrderNumber))
             {
                 lblLeadSet.Text = "n/a";
                 lblOrderNos.Text = "n/a";
@@ -118,17 +152,8 @@ namespace RenTradeWindowForm
                 lblStatus.Text = "No Active JO";
                 lblRemarks.Text = "Ongoing checking...";
 
-                return false;
-            }
-
-            return true;
-        }
-
-        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // get Job Information
-            if (!GetLearInformation())
                 goto proceed;
+            }
 
             Mode = "X0";
 
@@ -171,6 +196,14 @@ namespace RenTradeWindowForm
                     if (!registry.IsProd)
                     {
                         menuStrip.Enabled = true;
+
+                        // Waiting to abort job on the DIIT Software
+                        if (registry.ProcessStage == "F2")
+                        {
+                            lblRemarks.Text = "Waiting to abort JO on DIIT.";
+                            goto proceed;
+                        }
+
                         lblStatus.Text = "Test Mode";
 
                         // Intial First Step
@@ -193,6 +226,7 @@ namespace RenTradeWindowForm
                             {
                             InputQty:
                                 string input = "0";
+
                                 DialogBox.ShowInputDialogBox(ref input, "Please input additional quantity.", "Message Confirmation", 300, 110);
 
                                 if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
@@ -219,8 +253,8 @@ namespace RenTradeWindowForm
                                         registry.WriteRegistry("processCounter", counter1.ToString());
 
                                         // activate pedal to continue
-                                        registry.WriteRegistry("pedalStatus", "True");
                                         registry.WriteRegistry("processStage", "A1");
+                                        registry.WriteRegistry("pedalStatus", "True");
                                     }
                                     else
                                     {
@@ -321,6 +355,21 @@ namespace RenTradeWindowForm
                     {
                         menuStrip.Enabled = true;
                         lblStatus.Text = "Production";
+
+                        // Waiting to end job on the DIIT Software
+                        if (registry.ProcessStage == "F1")
+                        {
+                            lblRemarks.Text = "Waiting to finish JO on DIIT: " + registry.ProcessCounter.ToString() + " out of " + learjob.BundleSize.ToString() + ".";
+                            goto proceed;
+                        }
+
+                        // Waiting to abort job on the DIIT Software
+                        if (registry.ProcessStage == "F2")
+                        {
+                            lblRemarks.Text = "Waiting to abort JO on DIIT.";
+                            goto proceed;
+                        }
+
                         lblRemarks.Text = "Pedal is in action";
 
                         //*********************** Start Daily Quota Section ***********************//
@@ -629,13 +678,11 @@ namespace RenTradeWindowForm
                             }
                         }
 
-
                         // Caliper Test execution
                         if (registry.ProcessStage == "B4B")
                         {
                             lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
                         }
-
 
                         // Caliper Test validation if no data within specific timeframe
                         if (registry.ProcessStage == "B4C")
@@ -764,82 +811,94 @@ namespace RenTradeWindowForm
                 // valid license
                 if(this._isLicense)
                 {
-                    stStripMenuItem.Enabled = false;
-                    tmStripMenuItem.Enabled = true;
-                    ptStripMenuItem.Enabled = false;
-                    cmStripMenuItem.Enabled = false;
-
-                    if (!registry.PedalStatus && !registry.IsProd && registry.ProcessStage == "A1")
+                    if (String.IsNullOrEmpty(learjob.OrderNumber))
                     {
-                        btnStart.Enabled = true;
+                        btnStart.Enabled = false;
                         btnTerminate.Enabled = false;
 
-                        //stStripMenuItem.Enabled = true;
-                        //tmStripMenuItem.Enabled = false;
-                        //ptStripMenuItem.Enabled = false;
-                        //cmStripMenuItem.Enabled = false;
+                        stStripMenuItem.Enabled = false;
+                        tmStripMenuItem.Enabled = false;
+                        ptStripMenuItem.Enabled = false;
+                        cmStripMenuItem.Enabled = false;
+
+                        tsStatusLabel.Text = "Looking for active JO";
+                        tsStatusLabel.ToolTipText = "No Active JO";
+                        tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject("red"));
                     }
                     else
                     {
-                        btnStart.Enabled = false;
-                        btnTerminate.Enabled = true;
-                    }
-
-                    if (registry.ProcessStage == "A1")
-                    {
-                        stStripMenuItem.Enabled = btnStart.Enabled;
-                        tmStripMenuItem.Enabled = !btnStart.Enabled;
+                        stStripMenuItem.Enabled = false;
+                        tmStripMenuItem.Enabled = true;
                         ptStripMenuItem.Enabled = false;
                         cmStripMenuItem.Enabled = false;
-                    }
 
-                    // 2 - validation if achieve test qty, 3 - Pull Test message confirmation, 5 - Pull Test message confirmation
-                    string[] stageArray1 = { "A2", "A3", "A5A", "A8",
+                        if (!registry.PedalStatus && !registry.IsProd && registry.ProcessStage == "A1")
+                        {
+                            btnStart.Enabled = true;
+                            btnTerminate.Enabled = false;
+                        }
+                        else
+                        {
+                            btnStart.Enabled = false;
+                            btnTerminate.Enabled = true;
+                        }
+
+                        if (registry.ProcessStage == "A1")
+                        {
+                            stStripMenuItem.Enabled = btnStart.Enabled;
+                            tmStripMenuItem.Enabled = !btnStart.Enabled;
+                            ptStripMenuItem.Enabled = false;
+                            cmStripMenuItem.Enabled = false;
+                        }
+
+                        // 2 - validation if achieve test qty, 3 - Pull Test message confirmation, 5 - Pull Test message confirmation
+                        string[] stageArray1 = { "A2", "A3", "A5A", "A8",
                                              "B1", "B2", "B3", "B5A", "B8",
                                              "C2", "C3", "C5A", "C8" };
-                    if (stageArray1.Contains(registry.ProcessStage))
-                    {
-                        stStripMenuItem.Enabled = false;
-                        tmStripMenuItem.Enabled = true;
-                        ptStripMenuItem.Enabled = false;
-                        cmStripMenuItem.Enabled = false;
-                    }
+                        if (stageArray1.Contains(registry.ProcessStage))
+                        {
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = true;
+                            ptStripMenuItem.Enabled = false;
+                            cmStripMenuItem.Enabled = false;
+                        }
 
-                    // 4 - Caliper Test
-                    string[] stageArray2 = { "A4A", "B4A", "C4A" };
-                    if (stageArray2.Contains(registry.ProcessStage))
-                    {
-                        stStripMenuItem.Enabled = false;
-                        tmStripMenuItem.Enabled = true;
-                        ptStripMenuItem.Enabled = true;
-                        cmStripMenuItem.Enabled = true;
-                    }
+                        // 4 - Caliper Test
+                        string[] stageArray2 = { "A4A", "B4A", "C4A" };
+                        if (stageArray2.Contains(registry.ProcessStage))
+                        {
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = true;
+                            ptStripMenuItem.Enabled = true;
+                            cmStripMenuItem.Enabled = true;
+                        }
 
-                    // 4 - Caliper Test Execution
-                    string[] stageArray4 = { "A4B", "B4B", "C4B", "A4C", "B4C", "C4C" };
-                    if (stageArray4.Contains(registry.ProcessStage))
-                    {
-                        stStripMenuItem.Enabled = false;
-                        tmStripMenuItem.Enabled = true;
-                        ptStripMenuItem.Enabled = true;
-                        cmStripMenuItem.Enabled = false;
-                    }
+                        // 4 - Caliper Test Execution
+                        string[] stageArray4 = { "A4B", "B4B", "C4B", "A4C", "B4C", "C4C" };
+                        if (stageArray4.Contains(registry.ProcessStage))
+                        {
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = true;
+                            ptStripMenuItem.Enabled = true;
+                            cmStripMenuItem.Enabled = false;
+                        }
 
-                    // 6 - Pull Test execution, 7 - Pull Test validation if no data within specific timeframe, Message Confirmation to back to execution
-                    string[] stageArray3 = { "A5B", "A5C",
+                        // 6 - Pull Test execution, 7 - Pull Test validation if no data within specific timeframe, Message Confirmation to back to execution
+                        string[] stageArray3 = { "A5B", "A5C",
                                              "B5B", "B5C",
                                              "C5B", "C5C" };
-                    if (stageArray3.Contains(registry.ProcessStage))
-                    {
-                        stStripMenuItem.Enabled = false;
-                        tmStripMenuItem.Enabled = true;
-                        ptStripMenuItem.Enabled = true;
-                        cmStripMenuItem.Enabled = false;
-                    }
+                        if (stageArray3.Contains(registry.ProcessStage))
+                        {
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = true;
+                            ptStripMenuItem.Enabled = true;
+                            cmStripMenuItem.Enabled = false;
+                        }
 
-                    tsStatusLabel.Text = (registry.PedalStatus) ? "Pedal is active" : "Pedal is disabled";
-                    tsStatusLabel.ToolTipText = "Last Activity";
-                    tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject((registry.PedalStatus) ? "green" : "red"));
+                        tsStatusLabel.Text = (registry.PedalStatus) ? "Pedal is active" : "Pedal is disabled";
+                        tsStatusLabel.ToolTipText = "Last Activity";
+                        tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject((registry.PedalStatus) ? "green" : "red"));
+                    }                    
                 } 
                 else
                 {
@@ -850,8 +909,17 @@ namespace RenTradeWindowForm
             } 
             else
             {
-                tsStatusLabel.Text = "IO Device error";
-                tsStatusLabel.ToolTipText = "Last Activity";
+                if(String.IsNullOrEmpty(learjob.OrderNumber) && registry.IOBoardStatus == "X0")
+                {
+                    tsStatusLabel.Text = "Looking for active JO";
+                    tsStatusLabel.ToolTipText = "No Active JO";
+                } 
+                else
+                {
+                    tsStatusLabel.Text = "IO Device error";
+                    tsStatusLabel.ToolTipText = "Last Activity";
+                }
+
                 tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject("red"));
             }
 
@@ -911,7 +979,7 @@ namespace RenTradeWindowForm
             string input = "";
             DialogBox.ShowInputDialogBox(ref input, "Please input caliper results.", "Message Confirmation", 300, 110);
 
-            Regex regex = new(@"[^0-9^.^\;^\s*]");
+            Regex regex = new Regex(@"[^0-9^.^\;^\s*]");
             MatchCollection matches = regex.Matches(input);
 
             if (!String.IsNullOrEmpty(input) && matches.Count > 0)
