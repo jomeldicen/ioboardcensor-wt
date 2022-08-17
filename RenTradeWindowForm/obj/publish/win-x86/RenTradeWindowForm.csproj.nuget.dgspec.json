@@ -1,26 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {}
+    "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {}
   },
   "projects": {
-    "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {
+    "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+        "projectUniqueName": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
         "projectName": "RenTradeWindowForm",
-        "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+        "projectPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
         "packagesPath": "C:\\Users\\jpdicen\\.nuget\\packages\\",
-        "outputPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowForm\\obj\\publish\\win-x86\\",
+        "outputPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\obj\\publish\\win-x86\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
           "C:\\Users\\jpdicen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -35,8 +32,8 @@
           "net5.0-windows7.0": {
             "targetAlias": "net5.0-windows",
             "projectReferences": {
-              "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj": {
-                "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj"
+              "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj": {
+                "projectPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj"
               }
             }
           }
@@ -54,6 +51,10 @@
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[5.0.0, )"
+            },
+            "System.Management": {
+              "target": "Package",
+              "version": "[6.0.0, )"
             }
           },
           "imports": [
@@ -68,16 +69,32 @@
           "warn": true,
           "downloadDependencies": [
             {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            },
+            {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x86",
-              "version": "[5.0.6, 5.0.6]"
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x86",
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x86",
-              "version": "[5.0.6, 5.0.6]"
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x86",
-              "version": "[5.0.6, 5.0.6]"
+              "version": "[5.0.17, 5.0.17]"
             }
           ],
           "frameworkReferences": {
@@ -88,7 +105,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
@@ -97,23 +114,20 @@
         }
       }
     },
-    "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj": {
+    "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj",
+        "projectUniqueName": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj",
         "projectName": "RenTradeWindowService",
-        "projectPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj",
+        "projectPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowService\\RenTradeWindowService.csproj",
         "packagesPath": "C:\\Users\\jpdicen\\.nuget\\packages\\",
-        "outputPath": "D:\\MyDev\\GitHub\\ioboardcensor\\RenTradeWindowService\\obj\\",
+        "outputPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
           "C:\\Users\\jpdicen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -165,6 +179,10 @@
             "System.IO.Ports": {
               "target": "Package",
               "version": "[6.0.0, )"
+            },
+            "System.Security.Permissions": {
+              "target": "Package",
+              "version": "[6.0.0, )"
             }
           },
           "imports": [
@@ -179,16 +197,32 @@
           "warn": true,
           "downloadDependencies": [
             {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            },
+            {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x86",
-              "version": "[5.0.6, 5.0.6]"
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x86",
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x86",
-              "version": "[5.0.6, 5.0.6]"
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x86",
-              "version": "[5.0.6, 5.0.6]"
+              "version": "[5.0.17, 5.0.17]"
             }
           ],
           "frameworkReferences": {
@@ -196,7 +230,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
