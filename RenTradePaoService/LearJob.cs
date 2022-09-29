@@ -61,9 +61,25 @@ namespace RenTradeWindowService
                     registry.ReadRegistry();
                     if (!String.IsNullOrWhiteSpace(registry.OldOrderNos))
                     {
-                        if (!OrderNumber.Equals(registry.OldOrderNos) && registry.ProcessStage == "B8")
+                        if (!OrderNumber.Equals(registry.OldOrderNos) && (registry.ProcessStage == "B8" || registry.ProcessStage == "F1"))
+                        {
                             registry.WriteRegistry("quotaCounter", "0");
+                            registry.ReadRegistry();
+                        }
                     }
+                } 
+                else if (JobInfo == "ErrorDB")
+                {
+                    JobInfo = registry.JobInfo;
+
+                    string[] tokens = JobInfo.Split(stringSeparators, StringSplitOptions.None);
+
+                    OrderNumber = tokens[0].Trim().ToString();
+                    LeadSet = tokens[1].Trim().ToString();
+                    JobQty = Convert.ToInt16(tokens[2]);
+                    BundleSize = Convert.ToInt16(tokens[3]);
+
+                    registry.ReadRegistry();
                 }
                 else
                 {
@@ -84,7 +100,7 @@ namespace RenTradeWindowService
         public bool IsBOMExist(string BOMValue)
         {
             string sBOMitems = "";
-            bool isBOMexist = true;
+            bool isBOMexist = false;
             string[] stringSeparators = new string[] { ":::" };
 
             // Production Environment Mode
@@ -94,9 +110,7 @@ namespace RenTradeWindowService
             string[] tokens = sBOMitems.Split(stringSeparators, StringSplitOptions.None);
 
             if (isBOMexist || tokens.Contains(BOMValue))
-            {
                 return true;
-            }           
 
             return false;
         }

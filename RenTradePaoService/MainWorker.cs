@@ -24,6 +24,7 @@ namespace RenTradeWindowService
         private MessageQueue queue;
 
         private readonly string _machineName;
+        private readonly string _machineType;
         private readonly string _environmentMode;
         private readonly string _defaultMsgQueName;
         private readonly string _logPath;
@@ -35,6 +36,7 @@ namespace RenTradeWindowService
         private readonly int _midPcsInitCount;          // quota pcs
         private readonly int _lastPcsInitCount;         // prod pcs
         private readonly int _quotaInitCount;
+        private readonly int _wireTwistInitCount;
 
         private readonly string _comPort;
 
@@ -58,6 +60,7 @@ namespace RenTradeWindowService
 
             _environmentMode = _options.Value.EnvironmentMode;
             _machineName = String.IsNullOrEmpty(_options.Value.MachineName)? Environment.MachineName : _options.Value.MachineName;
+            _machineType = String.IsNullOrEmpty(_options.Value.MachineType)? "RG" : _options.Value.MachineType;
             _defaultMsgQueName = _options.Value.MessageQueueName;
             _logPath = _options.Value.LogPath;
             _dashboardFormPath = _options.Value.DashboardFormPath;
@@ -68,6 +71,7 @@ namespace RenTradeWindowService
             _midPcsInitCount = _options.Value.MidPcsInitCount;
             _lastPcsInitCount = _options.Value.LastPcsInitCount;
             _quotaInitCount = _options.Value.QuotaInitCount;
+            _wireTwistInitCount = _options.Value.WireTwistInitCount;
 
             _comPort = options.Value.ComPort;
 
@@ -181,7 +185,7 @@ namespace RenTradeWindowService
                         }
 
                         // Purge All Message queue prior to caliper and pull test
-                        string[] stageArray = { "A4B", "A5B", "B4B", "B5B", "C4B", "C5B" };
+                        string[] stageArray = { "A4B", "A5B", "A6B", "B4B", "B5B", "B6B", "C4B", "C5B", "C6B" };
                         if (!stageArray.Contains(registry.ProcessStage))
                         {
                             MessageQueue queue = new MessageQueue(this._defaultMsgQueName);
@@ -189,6 +193,12 @@ namespace RenTradeWindowService
                             queue.Dispose();
                             queue.Close();
                             queue.Refresh();
+                        }
+
+                        if (!registry.ReelStatus)
+                        {
+                            if(registry.PedalStatus) registry.WriteRegistry("pedalStatus", "False");
+                            goto proceed;
                         }
 
                         // in Test Mode
@@ -212,43 +222,63 @@ namespace RenTradeWindowService
                                 }
 
                                 // confirmation message if first pcs counter is equal to the nos of initial config.
-                                if (registry.ProcessCounter == this._firstPcsInitCount && (registry.ProcessStage == "A4B" || registry.ProcessStage == "A5B"))
+                                if (registry.ProcessCounter == this._firstPcsInitCount && (registry.ProcessStage == "A4B" || registry.ProcessStage == "A5B" || registry.ProcessStage == "A6B"))
                                 {
                                     // check if pull test counter is equal to first pcs count
-                                firstpcsLabelCounter:
-                                    if (registry.TestCounter <= _firstPcsInitCount)
+                                    // Regular Machine
+                                    if (_machineType == "RG")
                                     {
-                                        // for caliper input
-                                        if (registry.TestCounter == _firstPcsInitCount && registry.ProcessStage == "A4B")
+                                        firstpcsLabelCounter:
+                                        if (registry.TestCounter <= _firstPcsInitCount)
                                         {
-                                            registry.WriteRegistry("testCounter", "0");
-                                            registry.WriteRegistry("processStage", "A5A");
+                                        
+                                            // for caliper input
+                                            if (registry.TestCounter == _firstPcsInitCount && registry.ProcessStage == "A4B")
+                                            {
+                                                registry.WriteRegistry("testCounter", "0");
+                                                registry.WriteRegistry("processStage", "A5A");
+                                                goto proceed;
+                                            }
 
-                                            goto proceed;
+                                            // for pull test input
+                                            if (registry.TestCounter == _firstPcsInitCount && registry.ProcessStage == "A5B")
+                                            {
+                                                registry.WriteRegistry("processStage", "A8");
+                                                goto proceed;
+                                            }
+
+                                            // read message queue
+                                            this.MessageQueuing();                                        
                                         }
-
-                                        // for pull test input
-                                        if (registry.TestCounter == _firstPcsInitCount && registry.ProcessStage == "A5B")
+                                        else
                                         {
-                                            registry.WriteRegistry("processStage", "A8");
-
-                                            goto proceed;
+                                            registry.WriteRegistry("testCounter", _firstPcsInitCount.ToString());
+                                            registry.ReadRegistry();
+                                            goto firstpcsLabelCounter;
                                         }
-
-                                        // read message queue
-                                        this.MessageQueuing();
                                     }
                                     else
                                     {
-                                        registry.WriteRegistry("testCounter", _firstPcsInitCount.ToString());
-                                        registry.ReadRegistry();
-                                        goto firstpcsLabelCounter;
+                                        // for wire twist input
+                                        if (registry.TestCounter == _wireTwistInitCount && registry.ProcessStage == "A6B")
+                                        {
+                                            registry.WriteRegistry("processStage", "A8");
+                                            goto proceed;
+                                        }
                                     }
 
                                     goto proceed;
                                 }
 
                                 goto proceed;
+                            } else
+                            {
+                                if(registry.ProcessStage == "A1" && registry.ProcessCounter != 0)
+                                {
+                                    registry.WriteRegistry("pedalStatus", "True");
+                                    registry.ReadRegistry();
+                                    goto proceed;
+                                }
                             }
                         }
                         else // in Production Mode
@@ -263,85 +293,100 @@ namespace RenTradeWindowService
 
                             //*********************** Start Daily Quota Section ***********************//
                             // confirmation message if mid pcs counter is greater to the nos of initial config.
-                            if (registry.QuotaCounter > _quotaInitCount && (registry.ProcessStage == "B1" || registry.ProcessStage == "C2"))
+                            if(_midPcsInitCount != 0)
                             {
-                                registry.WriteRegistry("quotaCounter", _quotaInitCount.ToString());
-                                if (registry.ProcessStage == "B1")
+                                if (registry.QuotaCounter > _quotaInitCount && (registry.ProcessStage == "B1" || registry.ProcessStage == "C2"))
+                                {
+                                    registry.WriteRegistry("quotaCounter", _quotaInitCount.ToString());
+                                    if (registry.ProcessStage == "B1")
+                                    {
+                                        registry.WriteRegistry("processStage", "C2");
+                                        registry.WriteRegistry("pedalStatus", "False");
+                                        goto proceed;
+                                    }
+
+                                    registry.ReadRegistry();
+                                }
+
+                                // confirmation message if mid pcs counter is equal to the nos of initial config.
+                                if (registry.QuotaCounter == _quotaInitCount && registry.ProcessStage == "B1")
                                 {
                                     registry.WriteRegistry("processStage", "C2");
                                     registry.WriteRegistry("pedalStatus", "False");
                                     goto proceed;
                                 }
 
-                                registry.ReadRegistry();
-                            }
-
-                            // confirmation message if mid pcs counter is equal to the nos of initial config.
-                            if (registry.QuotaCounter == _quotaInitCount && registry.ProcessStage == "B1")
-                            {
-                                registry.WriteRegistry("processStage", "C2");
-                                registry.WriteRegistry("pedalStatus", "False");
-
-                                goto proceed;
-                            }
-
-                            // execute additional pcs
-                            if (registry.TestCounter >= _midPcsInitCount && registry.ProcessStage == "C3")
-                            {
-                                registry.WriteRegistry("processStage", "C3B");
-                                registry.WriteRegistry("pedalStatus", "False");
-
-                                goto proceed;
-                            }
-
-                            // confirmation message if last pcs counter is equal to the nos of initial config.
-                            if (registry.QuotaCounter == _quotaInitCount && (registry.ProcessStage == "C4B" || registry.ProcessStage == "C5B"))
-                            {
-                            // check if pull test counter is equal to mid pcs count
-                            midpcsLabelCounter:
-                                if (registry.TestCounter <= _midPcsInitCount)
+                                // execute additional pcs
+                                if (registry.TestCounter >= _midPcsInitCount && registry.ProcessStage == "C3")
                                 {
-                                    // for caliper input
-                                    if (registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C4B")
+                                    registry.WriteRegistry("processStage", "C3B");
+                                    registry.WriteRegistry("pedalStatus", "False");
+                                    goto proceed;
+                                }
+
+                                // confirmation message if last pcs counter is equal to the nos of initial config.
+                                if (registry.QuotaCounter == _quotaInitCount && (registry.ProcessStage == "C4B" || registry.ProcessStage == "C5B" || registry.ProcessStage == "C6B"))
+                                {
+                                    // check if pull test counter is equal to mid pcs count
+                                    // Regular Machine
+                                    if (_machineType == "RG")
                                     {
-                                        registry.WriteRegistry("testCounter", "0");
-                                        registry.WriteRegistry("processStage", "C5A");
+                                        midpcsLabelCounter:
+                                        if (registry.TestCounter <= _midPcsInitCount)
+                                        {
+                                        
+                                            // for caliper input
+                                            if (registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C4B")
+                                            {
+                                                registry.WriteRegistry("testCounter", "0");
+                                                registry.WriteRegistry("processStage", "C5A");
+                                                goto proceed;
+                                            }
+
+                                            // for pull test input
+                                            if (registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C5B")
+                                            {
+                                                registry.WriteRegistry("processStage", "C8");
+                                                goto proceed;
+                                            }
+
+                                            // read message queue
+                                            this.MessageQueuing();                                       
+                                        }
+                                        else
+                                        {
+                                            registry.WriteRegistry("testCounter", _midPcsInitCount.ToString());
+                                            registry.ReadRegistry();
+                                            goto midpcsLabelCounter;
+                                        }
 
                                         goto proceed;
                                     }
-
-                                    // for pull test input
-                                    if (registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C5B")
+                                    else
                                     {
-                                        registry.WriteRegistry("processStage", "C8");
-
-                                        goto proceed;
+                                        // for wire twist input
+                                        if (registry.TestCounter == _wireTwistInitCount && registry.ProcessStage == "C6B")
+                                        {
+                                            registry.WriteRegistry("processStage", "C8");
+                                            goto proceed;
+                                        }
                                     }
-
-                                    // read message queue
-                                    this.MessageQueuing();
                                 }
-                                else
-                                {
-                                    registry.WriteRegistry("testCounter", _midPcsInitCount.ToString());
-                                    registry.ReadRegistry();
-                                    goto midpcsLabelCounter;
-                                }
-
-                                goto proceed;
                             }
                             //*********************** End Daily Quota Section ***********************//
 
                             // check if pedal hit counter exceeds the production quantity
-                            if (registry.ProcessCounter >= learjob.BundleSize)
+                            int bundleSize = (_machineType == "RG")? learjob.BundleSize : learjob.BundleSize - _lastPcsInitCount;
+                            
+                            if (registry.ProcessCounter >= bundleSize)
                             {   
                                 //*********************** Start Production Section ***********************//
                                 // confirmation message if last pcs counter is equal to the nos of initial config.
-                                if (registry.ProcessCounter >= learjob.BundleSize && registry.ProcessStage == "B1")
+                                if (registry.ProcessCounter >= bundleSize && registry.ProcessStage == "B1")
                                 {
                                     registry.WriteRegistry("processStage", "B2");
                                     registry.WriteRegistry("pedalStatus", "False");
-                                    registry.WriteRegistry("processCounter", learjob.BundleSize.ToString());
+                                    registry.WriteRegistry("processCounter", bundleSize.ToString());
 
                                     goto proceed;
                                 }
@@ -354,44 +399,71 @@ namespace RenTradeWindowService
 
                                     goto proceed;
                                 }
-
-                                // confirmation message if last pcs counter is equal to the nos of initial config.
-                                if (registry.ProcessCounter == learjob.BundleSize && (registry.ProcessStage == "B4B" || registry.ProcessStage == "B5B"))
-                                {
+                               
+                                // Regular Machine
+                                if (_machineType == "RG")
+                                { 
+                                    // confirmation message if last pcs counter is equal to the nos of initial config.
+                                    if (registry.ProcessCounter == bundleSize && (registry.ProcessStage == "B4B" || registry.ProcessStage == "B5B" || registry.ProcessStage == "B6B"))
+                                    {
                                     // check if pull test counter is equal to last pcs count
                                     lastpcsLabelCounter:
-                                    if (registry.TestCounter <= _lastPcsInitCount)
-                                    {
-                                        // for caliper input
-                                        if (registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B4B")
+                                        if (registry.TestCounter <= _lastPcsInitCount)
                                         {
-                                            registry.WriteRegistry("testCounter", "0");
-                                            registry.WriteRegistry("processStage", "B5A");
 
-                                            goto proceed;
+                                            // for caliper input
+                                            if (registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B4B")
+                                            {
+                                                registry.WriteRegistry("testCounter", "0");
+                                                registry.WriteRegistry("processStage", "B5A");
+
+                                                goto proceed;
+                                            }
+
+                                            // for pull test input
+                                            if (registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B5B")
+                                            {
+                                                registry.WriteRegistry("processStage", "B8");
+
+                                                goto proceed;
+                                            }
+
+                                            // read message queue
+                                            this.MessageQueuing();
+                                        }
+                                        else
+                                        {
+                                            registry.WriteRegistry("testCounter", _lastPcsInitCount.ToString());
+                                            registry.ReadRegistry();
+                                            goto lastpcsLabelCounter;
                                         }
 
-                                        // for pull test input
-                                        if (registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B5B")
+                                        goto proceed;
+                                    }
+                                }
+                                else
+                                {
+                                    // confirmation message if last pcs counter is equal to the nos of initial config.
+                                    if (registry.ProcessCounter == bundleSize + _lastPcsInitCount && (registry.ProcessStage == "B6B"))
+                                    {
+                                        // for wire twist input
+                                        if (registry.TestCounter == _wireTwistInitCount && registry.ProcessStage == "B6B")
                                         {
                                             registry.WriteRegistry("processStage", "B8");
-
                                             goto proceed;
                                         }
-
-                                        // read message queue
-                                        this.MessageQueuing();
                                     }
-                                    else
-                                    {
-                                        registry.WriteRegistry("testCounter", _lastPcsInitCount.ToString());
-                                        registry.ReadRegistry();
-                                        goto lastpcsLabelCounter;
-                                    }
-
-                                    goto proceed;
                                 }
                                 //*********************** End Production Section ***********************//
+                            }
+                            else
+                            {
+                                if (registry.ProcessStage == "B1" && registry.ProcessCounter != 0)
+                                {
+                                    registry.WriteRegistry("pedalStatus", "True");
+                                    registry.ReadRegistry();
+                                    goto proceed;
+                                }
                             }
                         }
                     }
@@ -562,7 +634,6 @@ namespace RenTradeWindowService
             }
         }
 
-
         private bool DeviceExecution()
         {
             if(registry.IOBoardStatus == "R0")
@@ -578,17 +649,20 @@ namespace RenTradeWindowService
                     registry.WriteRegistry("ioBoardStatus", "X3");
             }
 
-            //// Input 0 - Pedal Indicator
-            //// Input 1 - Reel Indicator
+            // Input 0 - Pedal Indicator
+            // Input 1&2 - Reel Indicator
 
-            if ( !registry.ReelStatus)
-                oIOBoard.ioBoard_SetOutput(0, "ON");
+            //if (registry.ReelStatus)
+            //    oIOBoard.ioBoard_SetOutput(0, "ON");
 
             // reel section
-            if (!ReadIOStatus("I", 1))
+            if (!ReadIOStatus("I", 1) || !ReadIOStatus("I", 2))
             {
                 registry.WriteRegistry("reelStatus", "False");
                 registry.WriteRegistry("pedalStatus", "False");
+                registry.ReadRegistry();
+                oIOBoard.ioBoard_SetOutput(0, "OFF");
+                return false;
             }
 
             // Check Pedal Status set to true
@@ -623,6 +697,13 @@ namespace RenTradeWindowService
 
                             registry.TestCounter++;
                             registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
+
+                            // in Wire Twist, last piece is part of production qty
+                            if(registry.ProcessStage == "B3" && _machineType == "WT")
+                            {
+                                registry.ProcessCounter++;
+                                registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                            }
                         } else
                         {
                             if (registry.IsProd)
@@ -634,8 +715,12 @@ namespace RenTradeWindowService
                                     registry.ProcessCounter++;
                                     registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
 
-                                    registry.QuotaCounter++;
-                                    registry.WriteRegistry("quotaCounter", registry.QuotaCounter.ToString());
+                                    // if mid pcs is set to 0, do not increment quota counter
+                                    if(_midPcsInitCount != 0)
+                                    {
+                                        registry.QuotaCounter++;
+                                        registry.WriteRegistry("quotaCounter", registry.QuotaCounter.ToString());
+                                    }
                                 }
                             }
                             else
