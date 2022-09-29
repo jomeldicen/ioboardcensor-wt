@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using RenTradeWindowForm.Properties;
 using System.Linq;
 using FoxLearn.License;
+using Microsoft.VisualBasic;
 
 namespace RenTradeWindowForm
 {
@@ -21,6 +22,7 @@ namespace RenTradeWindowForm
         private readonly int _threadDelay;
 
         private readonly string _machineName;
+        private readonly string _machineType;
         private readonly string _environmentMode;
         private readonly string _testPcsMsg;
         private readonly string _prodPcsMsg;
@@ -31,10 +33,13 @@ namespace RenTradeWindowForm
         private readonly int _midPcsInitCount;
         private readonly int _lastPcsInitCount;
         private readonly int _quotaInitCount;
+        private readonly int _wireTwistInitCount;
 
         private readonly bool _isLicense = false;
 
         private string Mode;
+
+        ManualResetEvent _suspendEvent = new ManualResetEvent(true);
 
         public MainForm(IOptions<ServiceConfiguration> options)
         {
@@ -66,6 +71,7 @@ namespace RenTradeWindowForm
             _quotaPcsMsg = _options.Value.QuotaPcsMsg;
             _endJobMsg = _options.Value.EndJobMsg;
             _machineName = String.IsNullOrEmpty(_options.Value.MachineName) ? Environment.MachineName : _options.Value.MachineName;
+            _machineType = String.IsNullOrEmpty(_options.Value.MachineType) ? "RG" : _options.Value.MachineType;
             _environmentMode = _options.Value.EnvironmentMode;
 
             // Count for Pull Test and Caliper
@@ -73,6 +79,7 @@ namespace RenTradeWindowForm
             _midPcsInitCount = _options.Value.MidPcsInitCount;
             _lastPcsInitCount = _options.Value.LastPcsInitCount;
             _quotaInitCount = _options.Value.QuotaInitCount;
+            _wireTwistInitCount = _options.Value.WireTwistInitCount;
 
             // Windows Form Start Position
             this.StartPosition = FormStartPosition.Manual;
@@ -84,6 +91,9 @@ namespace RenTradeWindowForm
                     return;
                 }
             }
+
+            //this.TopMost = true;
+            //this.TopLevel = true;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -172,25 +182,16 @@ namespace RenTradeWindowForm
                         btnTerminate.Enabled = false;
 
                         lblStatus.Text = (registry.IsProd) ? "Production" : "Test Mode";
-                        lblRemarks.Text = "Reel has been deactivated! For BOM scanning.";
+                        lblRemarks.Text = "Reel has been deactivated! For BOM scanning";
 
-                    InputQty:
-                        string input = "0";
-                        DialogBox.ShowInputDialogBox(ref input, "Please scan BOM.", "Message Confirmation", 300, 110);
-
-                        if (!String.IsNullOrEmpty(input) && learjob.IsBOMExist(input))
-                        {
-                            registry.WriteRegistry("reelStatus", "True");
-                            registry.WriteRegistry("pedalStatus", "True");
-                        }
-                        else
-                        {
-                            MessageBox.Show(this, "Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            goto InputQty;
-                        }
+                        grpInput.Enabled = true;
+                        grpInput.Location = new Point(12, 238);
+                        grpInput.Text = "BOM Scanning";
+                        lblInputLabel.Text = "Please enter/scan BOM Value";
+                        txtInput.Focus();
 
                         goto proceed;
-                    }
+                    } 
 
                     // Test Mode
                     if (!registry.IsProd)
@@ -200,16 +201,22 @@ namespace RenTradeWindowForm
                         // Waiting to abort job on the DIIT Software
                         if (registry.ProcessStage == "F2")
                         {
-                            lblRemarks.Text = "Waiting to abort JO on DIIT.";
+                            lblRemarks.Text = "Waiting to abort JO on DIIT";
                             goto proceed;
                         }
 
-                        lblStatus.Text = "Test Mode";
+                        lblStatus.Text = (_machineType == "RG")? "Test Mode" : "Production";
 
                         // Intial First Step
                         if (registry.ProcessStage == "A1")
                         {
-                            lblRemarks.Text = (registry.PedalStatus) ? "For item pcs execution: " + registry.ProcessCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + "." : "Click 'Start' button to proceed";
+                            lblRemarks.Text = (registry.PedalStatus) ? "For item pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + ((_machineType == "RG")? _firstPcsInitCount.ToString() : lblBatchTarget.Text): "Click 'Start' button to proceed";
+
+                            grpWireTwist.Enabled = false;
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // validation if achieve test qty
@@ -220,113 +227,128 @@ namespace RenTradeWindowForm
                             DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                             {
-                                registry.WriteRegistry("processStage", "A4A");
-                            }
-                            else
-                            {
-                            InputQty:
-                                string input = "0";
-
-                                DialogBox.ShowInputDialogBox(ref input, "Please input additional quantity.", "Message Confirmation", 300, 110);
-
-                                if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
-                                {
-                                    // not greater than 9
-                                    if (input.Length > 1)
-                                    {
-                                        MessageBox.Show(this, "Maximum quantity is not greater than 9.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    // not less than or equal to 0
-                                    if (input.Length <= 0)
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be less than or equal to 0.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    if (value <= registry.ProcessCounter)
-                                    {
-                                        lblRemarks.Text = "Pedal is in action";
-
-                                        var counter1 = registry.ProcessCounter - value;
-                                        registry.WriteRegistry("processCounter", counter1.ToString());
-
-                                        // activate pedal to continue
-                                        registry.WriteRegistry("processStage", "A1");
-                                        registry.WriteRegistry("pedalStatus", "True");
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be equal to 0 or greater than the accumulated count", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-                                }
+                                if (_machineType == "RG")
+                                    registry.WriteRegistry("processStage", "A4B");
                                 else
                                 {
-                                    MessageBox.Show(this, "Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    goto InputQty;
+                                    registry.WriteRegistry("processStage", "A6B");
+
+                                    grpWireTwist.Location = new Point(12, 238);
+                                    grpWireTwist.Enabled = true;
+                                    txtPitchDim.Text = "0";
+                                    txtLeftDim.Text = "0";
+                                    txtRightDim.Text = "0";
+                                    lblWTRemarks.Text = "";
                                 }
                             }
+                            else
+                            {     
+                                registry.WriteRegistry("processStage", "A2C");
+                                txtInput.Text = "0";
+                                lblInputLabel.Text = "Please input additional quantity";
+                                grpInput.Text = "Additional Piece";
+                                lblInputRemarks.Text = "";
+                            }
+
+                            goto proceed;
                         }
 
-                        // Additional Pcs for Test
+                        // show input panel
+                        if (registry.ProcessStage == "A2C" && !registry.PedalStatus)
+                        {
+                            lblRemarks.Text = "For additional quantity execution";
+
+                            grpInput.Location = new Point(12, 238);
+                            lblInputLabel.Text = "Please input additional quantity";
+                            grpInput.Text = "Additional Piece";
+                            grpInput.Enabled = true;
+
+                            goto proceed;
+                        }
+
+                        if (registry.ProcessStage == "A2D" && !registry.PedalStatus)
+                        {
+                            lblRemarks.Text = "For additional quantity execution";
+
+                            registry.WriteRegistry("pedalStatus", "True");
+                            registry.WriteRegistry("processStage", "A1");
+
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
+                        }
+
+                        // Additional pc(s) for Test
                         if (registry.ProcessStage == "A3")
                         {
-                            lblRemarks.Text = "For item pcs execution: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
+                            lblRemarks.Text = "For item pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+
+                            goto proceed;
                         }
 
-
                         // Caliper Test message confirmation
-                        if (registry.ProcessStage == "A4A")
+                        // <-- disregard -->
+                        if (registry.ProcessStage == "A4A" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
-                            DialogResult result = MessageBox.Show(this, "Please perform (" + _firstPcsInitCount.ToString() + ") CALIPER/PULL TEST input.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+                            DialogResult result = MessageBox.Show(this, "Please perform (" + _firstPcsInitCount.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
                             if (result == DialogResult.OK)
                             {
                                 registry.WriteRegistry("processStage", "A4B");
                             }
+
+                            goto proceed;
                         }
 
                         // Caliper Test execution
-                        if (registry.ProcessStage == "A4B")
+                        if (registry.ProcessStage == "A4B" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // Caliper Test validation if no data within specific timeframe
-                        if (registry.ProcessStage == "A4C")
+                        if (registry.ProcessStage == "A4C" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
                             DialogResult result = MessageBox.Show(this, "Do you want to continue CALIPER execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
-                            {
                                 registry.WriteRegistry("processStage", "A4B");
-                            }
                             else
-                            {
                                 MessageBox.Show(this, "Please continue CALIPER execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
 
+                            goto proceed;
                         }
 
                         // Pull Test message confirmation
-                        if (registry.ProcessStage == "A5A")
+                        if (registry.ProcessStage == "A5A" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
                             registry.WriteRegistry("processStage", "A5B");
+
+                            goto proceed;
                         }
 
                         // Pull Test execution
-                        if (registry.ProcessStage == "A5B")
+                        if (registry.ProcessStage == "A5B" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // Pull Test validation if no data within specific timeframe
-                        if (registry.ProcessStage == "A5C")
+                        if (registry.ProcessStage == "A5C" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
                             DialogResult result = MessageBox.Show(this, "Do you want to continue PULL TEST execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                             {
@@ -334,400 +356,611 @@ namespace RenTradeWindowForm
                             }
                             else
                             {
-                                MessageBox.Show(this, "Please continue PULL TEST execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show(this, "Please continue PULL TEST execution", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
+
+                            goto proceed;
+                        }
+
+                        // Wire Twist message confirmation
+                        if (registry.ProcessStage == "A6A" && _machineType == "WT")
+                        {
+                            lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
+
+                            registry.WriteRegistry("processStage", "A6B");
+                            grpWireTwist.Location = new Point(12, 238);
+
+                            goto proceed;
+                        } 
+
+                        // Wire Twist execution
+                        if (registry.ProcessStage == "A6B" && _machineType == "WT")
+                        {
+                            lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
+
+                            grpWireTwist.Enabled = true;
+                            grpWireTwist.Location = new Point(12, 238);
+
+                            goto proceed;
                         }
 
                         // Message Confirmation to back to execution
                         if (registry.ProcessStage == "A8")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() + ".";
-                            MessageBox.Show(this, "Production execution activated.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            lblRemarks.Text = "For " + ((_machineType == "RG") ? "PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString() : "WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString());
+                            //MessageBox.Show(this, "Production execution activated.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             registry.WriteRegistry("isProd", "True");
                             registry.WriteRegistry("processStage", "B1");
                             registry.WriteRegistry("testCounter", "0");
-                            registry.WriteRegistry("processCounter", "0");
+
+                            if (_machineType == "RG")
+                                registry.WriteRegistry("processCounter", "0");
+                            else
+                                // in Wire Twist, continuation of counting
+                                registry.WriteRegistry("processCounter", _firstPcsInitCount.ToString());
+
                             registry.WriteRegistry("pedalStatus", "True");
+
+                            goto proceed;
                         }
                     }
                     else // Production
                     {
                         menuStrip.Enabled = true;
-                        lblStatus.Text = "Production";
 
                         // Waiting to end job on the DIIT Software
                         if (registry.ProcessStage == "F1")
                         {
-                            lblRemarks.Text = "Waiting to finish JO on DIIT: " + registry.ProcessCounter.ToString() + " out of " + learjob.BundleSize.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "Waiting to finish JO on DIIT: " + registry.ProcessCounter.ToString() + " out of " + learjob.BundleSize.ToString();
                             goto proceed;
                         }
 
                         // Waiting to abort job on the DIIT Software
                         if (registry.ProcessStage == "F2")
                         {
-                            lblRemarks.Text = "Waiting to abort JO on DIIT.";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "Waiting to abort JO on DIIT";
                             goto proceed;
                         }
 
-                        lblRemarks.Text = "Pedal is in action";
+                        //if ((registry.ProcessStage == "C6B" || registry.ProcessStage == "B6B") && _machineType == "WT")
+                        //{
+                        //    grpWireTwist.Enabled = false;
+                        //    txtPitchDim.Text = "0";
+                        //    txtLeftDim.Text = "0";
+                        //    txtRightDim.Text = "0";
+                        //    resetGroupInput();
+                        //}
 
                         //*********************** Start Daily Quota Section ***********************//
                         // validation if achieve test qty
-                        if (registry.ProcessStage == "C2" && !registry.PedalStatus)
+                        if(_midPcsInitCount != 0)
                         {
-                            lblRemarks.Text = "For daily quota validation";
-                            DialogResult result = MessageBox.Show(this, _quotaPcsMsg, "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                            if (result == DialogResult.OK)
+                            if (registry.ProcessStage == "C2" && !registry.PedalStatus)
                             {
-                                lblRemarks.Text = "Execute additional item(s).";
-                                DialogResult result2 = MessageBox.Show(this, "Please excute additional (" + _midPcsInitCount.ToString() + ") item/s.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                                if (result2 == DialogResult.OK)
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For mid pc(s) validation";
+
+                                DialogResult result = MessageBox.Show(this, _quotaPcsMsg, "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                                if (result == DialogResult.OK)
                                 {
+                                    lblRemarks.Text = "Execute additional (" + _midPcsInitCount.ToString() + ") item(s)";
                                     // activate pedal to continue
                                     registry.WriteRegistry("pedalStatus", "True");
                                     registry.WriteRegistry("processStage", "C3");
                                 }
+
+                                goto proceed;
                             }
-                        }
 
-                        // Additional Pcs for Test
-                        if (registry.ProcessStage == "C3")
-                        {
-                            lblRemarks.Text = "For additional pcs execution: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                        }
-
-                        // validation if achieve test qty
-                        if (registry.ProcessStage == "C3B")
-                        {
-                            lblRemarks.Text = "For additional pcs execution: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                            DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                            if (result == DialogResult.Yes)
+                            // Additional pc(s) for Test
+                            if (registry.ProcessStage == "C3")
                             {
-                                registry.WriteRegistry("pedalStatus", "False");
-                                registry.WriteRegistry("processStage", "C4A");
-                                registry.WriteRegistry("testCounter", "0");
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+
+                                grpInput.Enabled = false;
+                                resetGroupInput();
+
+                                goto proceed;
                             }
-                            else
-                            {
-                            InputQty:
-                                string input = "0";
-                                DialogBox.ShowInputDialogBox(ref input, "Please input additional quantity.", "Message Confirmation", 300, 110);
 
-                                if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
+                            // validation if achieve test qty
+                            if (registry.ProcessStage == "C3B")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+
+                                DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                                if (result == DialogResult.Yes)
                                 {
-                                    // not greater than 9
-                                    if (input.Length > 1)
-                                    {
-                                        MessageBox.Show(this, "Maximum quantity is not greater than 9.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
+                                    registry.WriteRegistry("pedalStatus", "False");
 
-                                    // not less than or equal to 0
-                                    if (input.Length <= 0)
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be less than or equal to 0.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    if (value <= registry.TestCounter && value != 0)
-                                    {
-                                        lblRemarks.Text = "Pedal is in action";
-
-                                        var counter1 = registry.TestCounter - value;
-                                        registry.WriteRegistry("testCounter", counter1.ToString());
-
-                                        // activate pedal to continue
-                                        registry.WriteRegistry("pedalStatus", "True");
-                                        registry.WriteRegistry("processStage", "C3");
-                                    }
+                                    if (_machineType == "RG")
+                                        registry.WriteRegistry("processStage", "C4B");
                                     else
                                     {
-                                        MessageBox.Show(this, "Quantity should not be equal to 0 or greater than the accumulated count", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
+                                        registry.WriteRegistry("processStage", "C6B");
+
+                                        grpWireTwist.Location = new Point(12, 238);
+                                        grpWireTwist.Enabled = true;
+                                        txtPitchDim.Text = "0";
+                                        txtLeftDim.Text = "0";
+                                        txtRightDim.Text = "0";
+                                        lblWTRemarks.Text = "";
                                     }
+
+                                    registry.WriteRegistry("testCounter", "0");
                                 }
                                 else
                                 {
-                                    MessageBox.Show(this, "Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    goto InputQty;
+                                    registry.WriteRegistry("processStage", "C3C");
+                                    txtInput.Text = "0";
+                                    lblInputRemarks.Text = "";
+                                    lblInputLabel.Text = "Please input additional quantity";
+                                    grpInput.Text = "Additional Piece";
+                                    txtInput.Focus();
                                 }
-                            }
-                        }
 
-                        // Caliper Test message confirmation
-                        if (registry.ProcessStage == "C4A")
-                        {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                            DialogResult result = MessageBox.Show(this, "Please perform (" + _midPcsInitCount.ToString() + ") CALIPER/PULL TEST input.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                            if (result == DialogResult.OK)
+                                goto proceed;
+                            }
+
+                            // show input panel
+                            if (registry.ProcessStage == "C3C" && !registry.PedalStatus)
                             {
-                                registry.WriteRegistry("processStage", "C4B");
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For additional quantity execution";
+
+                                grpInput.Location = new Point(12, 238);
+                                lblInputLabel.Text = "Please input additional quantity";
+                                grpInput.Text = "Additional Piece";
+                                grpInput.Enabled = true;
+
+                                goto proceed;
                             }
-                        }
 
+                            if (registry.ProcessStage == "C3D" && !registry.PedalStatus)
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For additional quantity execution";
 
-                        // Caliper Test execution
-                        if (registry.ProcessStage == "C4B")
-                        {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                        }
+                                registry.WriteRegistry("pedalStatus", "True");
+                                registry.WriteRegistry("processStage", "C3");
 
-                        // Caliper Test validation if no data within specific timeframe
-                        if (registry.ProcessStage == "C4C")
-                        {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
+                                grpInput.Enabled = false;
+                                resetGroupInput();
 
-                            DialogResult result = MessageBox.Show(this, "Do you want to continue CALIPER execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                            if (result == DialogResult.Yes)
-                                registry.WriteRegistry("processStage", "C4B");
-                            else
-                                MessageBox.Show(this, "Please continue CALIPER execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
+                                goto proceed;
+                            }
 
-                        // Pull Test message confirmation
-                        if (registry.ProcessStage == "C5A")
-                        {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                            registry.WriteRegistry("processStage", "C5B");
-                        }
+                            // Caliper Test message confirmation
+                            // <-- disregard -->
+                            if (registry.ProcessStage == "C4A" && _machineType == "RG")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
 
-                        // Pull Test execution
-                        if (registry.ProcessStage == "C5B")
-                        {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                        }
+                                DialogResult result = MessageBox.Show(this, "Please perform (" + _midPcsInitCount.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                                if (result == DialogResult.OK)
+                                {
+                                    registry.WriteRegistry("processStage", "C4B");
+                                }
 
-                        // Pull Test validation if no data within specific timeframe
-                        if (registry.ProcessStage == "C5C")
-                        {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                            DialogResult result = MessageBox.Show(this, "Do you want to continue PULL TEST execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                            if (result == DialogResult.Yes)
+                                goto proceed;
+                            }
+
+                            // Caliper Test execution
+                            if (registry.ProcessStage == "C4B" && _machineType == "RG")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+
+                                grpInput.Enabled = false;
+                                resetGroupInput();
+
+                                goto proceed;
+                            }
+
+                            // Caliper Test validation if no data within specific timeframe
+                            if (registry.ProcessStage == "C4C" && _machineType == "RG")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+
+                                DialogResult result = MessageBox.Show(this, "Do you want to continue CALIPER execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                                if (result == DialogResult.Yes)
+                                    registry.WriteRegistry("processStage", "C4B");
+                                else
+                                    MessageBox.Show(this, "Please continue CALIPER execution", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                goto proceed;
+                            }
+
+                            // Pull Test message confirmation
+                            if (registry.ProcessStage == "C5A" && _machineType == "RG")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
                                 registry.WriteRegistry("processStage", "C5B");
-                            else
-                                MessageBox.Show(this, "Please continue PULL TEST execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
 
-                        // Message Confirmation to back to execution
-                        if (registry.ProcessStage == "C8")
-                        {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() + ".";
-                            DialogResult result = MessageBox.Show(this, "Please continue production execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                            if (result == DialogResult.OK)
+                                goto proceed;
+                            }
+
+                            // Pull Test execution
+                            if (registry.ProcessStage == "C5B" && _machineType == "RG")
                             {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+
+                                grpInput.Enabled = false;
+                                resetGroupInput();
+
+                                goto proceed;
+                            }
+
+                            // Pull Test validation if no data within specific timeframe
+                            if (registry.ProcessStage == "C5C" && _machineType == "RG")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+
+                                DialogResult result = MessageBox.Show(this, "Do you want to continue PULL TEST execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                                if (result == DialogResult.Yes)
+                                    registry.WriteRegistry("processStage", "C5B");
+                                else
+                                    MessageBox.Show(this, "Please continue PULL TEST execution", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                goto proceed;
+                            }
+
+                            // Wire Twist message confirmation
+                            if (registry.ProcessStage == "C6A" && _machineType == "WT")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
+
+                                registry.WriteRegistry("processStage", "C6B");
+                                grpWireTwist.Location = new Point(12, 238);
+
+                                goto proceed;
+                            }
+
+                            // Wire Twist execution
+                            if (registry.ProcessStage == "C6B" && _machineType == "WT")
+                            {
+                                lblStatus.Text = "Mid Piece";
+                                lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
+
+                                grpWireTwist.Enabled = true;
+                                grpWireTwist.Location = new Point(12, 238);
+
+                                goto proceed;
+                            }
+
+                            // Message Confirmation to back to execution
+                            if (registry.ProcessStage == "C8")
+                            {
+                                lblStatus.Text = "Mid Piece"; 
+                                lblRemarks.Text = "For " + ((_machineType == "RG") ? "PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString() : "WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString());
+
+                                grpWireTwist.Enabled = false;
+                                txtPitchDim.Text = "0";
+                                txtLeftDim.Text = "0";
+                                txtRightDim.Text = "0";
+                                resetGroupInput();
+                                //DialogResult result = MessageBox.Show(this, "Please continue production execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                                //if (result == DialogResult.OK)
+                                //{
                                 registry.WriteRegistry("processStage", "B1");
                                 registry.WriteRegistry("quotaCounter", "0");
                                 registry.WriteRegistry("testCounter", "0");
+                                //}
+
+                                goto proceed;
                             }
                         }
                         //*********************** End Daily Quota Section ***********************//
 
                         //*********************** Start Production Section ***********************//
-
                         // Start Production
                         if (registry.ProcessStage == "B1" && !registry.PedalStatus)
                         {
                             // activate pedal to continue
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+
                             registry.WriteRegistry("pedalStatus", "True");
+
+                            goto proceed;
+                        }
+
+                        if (registry.ProcessStage == "B1" && registry.PedalStatus)
+                        {
+                            // activate pedal to continue
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+
+                            grpWireTwist.Enabled = false;
+                            grpInput.Enabled = false;
+                            txtPitchDim.Text = "0";
+                            txtLeftDim.Text = "0";
+                            txtRightDim.Text = "0";
+                            txtInput.Text = "0";
+                            lblWTRemarks.Text = "";
+                            lblInputRemarks.Text = "";
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // validation if achieve prod qty
                         if (registry.ProcessStage == "B2" && !registry.PedalStatus)
                         {
+                            lblStatus.Text = "Production";
                             lblRemarks.Text = "For quantity validation";
-                            DialogResult result = MessageBox.Show(this, _prodPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                            if (result == DialogResult.Yes)
+
+                            if(_machineType == "RG")
                             {
-                                lblRemarks.Text = "Execute additional item(s).";
-                                DialogResult result2 = MessageBox.Show(this, "Please excute additional (" + _lastPcsInitCount.ToString() + ") item/s.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                                if (result2 == DialogResult.OK)
+                                DialogResult result = MessageBox.Show(this, _prodPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                                if (result == DialogResult.Yes)
                                 {
+                                    lblRemarks.Text = "Execute additional (" + _lastPcsInitCount.ToString() + ") item(s)";
                                     // activate pedal to continue
                                     registry.WriteRegistry("pedalStatus", "True");
                                     registry.WriteRegistry("processStage", "B3");
                                 }
-                            }
-                            else
-                            {
-                            InputQty:
-                                string input = "0";
-                                DialogBox.ShowInputDialogBox(ref input, "Please input additional quantity.", "Message Confirmation", 300, 110);
-
-                                if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
-                                {
-                                    // not greater than 9
-                                    if (input.Length > 1)
-                                    {
-                                        MessageBox.Show(this, "Maximum quantity is not greater than 9.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    // not less than or equal to 0
-                                    if (input.Length <= 0)
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be less than or equal to 0.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    if (value <= registry.ProcessCounter && value != 0)
-                                    {
-                                        lblRemarks.Text = "Pedal is in action";
-
-                                        var counter1 = registry.ProcessCounter - value;
-                                        registry.WriteRegistry("processCounter", counter1.ToString());
-
-                                        if (registry.QuotaCounter >= value)
-                                        {
-                                            counter1 = registry.QuotaCounter - value;
-                                            registry.WriteRegistry("quotaCounter", counter1.ToString());
-                                        }
-
-                                        // activate pedal to continue
-                                        registry.WriteRegistry("pedalStatus", "True");
-                                        registry.WriteRegistry("processStage", "B1");
-
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be equal to 0 or greater than the accumulated count", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-                                }
                                 else
                                 {
-                                    MessageBox.Show(this, "Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    goto InputQty;
+                                    registry.WriteRegistry("processStage", "B2C");
+                                    lblInputRemarks.Text = "";
+                                    lblInputLabel.Text = "Please input additional quantity";
+                                    txtInput.Text = "0";
                                 }
+                            } 
+                            else
+                            {
+                                lblRemarks.Text = "For last pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                                // activate pedal to continue
+                                registry.WriteRegistry("pedalStatus", "True");
+                                registry.WriteRegistry("processStage", "B3");
                             }
+
+                            goto proceed;
                         }
 
-                        // Additional Pcs for Test
+                        // show input panel
+                        if (registry.ProcessStage == "B2C" && !registry.PedalStatus)
+                        {
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For additional quantity execution";
+
+                            grpInput.Enabled = true;
+                            grpInput.Location = new Point(12, 238);
+                            lblInputLabel.Text = "Please input additional quantity";
+                            txtInput.Focus();
+
+                            goto proceed;
+                        }
+
+                        if (registry.ProcessStage == "B2D" && !registry.PedalStatus)
+                        {
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For additional quantity execution";
+
+                            registry.WriteRegistry("pedalStatus", "True");
+                            registry.WriteRegistry("processStage", "B1");
+                            txtInput.Text = "0";
+                            grpInput.Enabled = false;
+
+                            goto proceed;
+                        }
+
+                        // Additional pc(s) for Test
                         if (registry.ProcessStage == "B3")
                         {
-                            lblRemarks.Text = "For additional pcs execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+
+                            if(_machineType == "RG")
+                                lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
+                            else
+                                lblRemarks.Text = "For last pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+
+                            goto proceed;
                         }
 
                         // validation if achieve test qty
                         if (registry.ProcessStage == "B3B")
                         {
-                            lblRemarks.Text = "For additional pcs execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            if (_machineType == "RG")
+                                lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
+                            else
+                                lblRemarks.Text = "For last pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+
                             DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                             {
                                 registry.WriteRegistry("pedalStatus", "False");
-                                registry.WriteRegistry("processStage", "B4A");
+
+                                if (_machineType == "RG")
+                                    registry.WriteRegistry("processStage", "B4B");
+                                else
+                                {
+                                    registry.WriteRegistry("processStage", "B6B");
+
+                                    grpWireTwist.Location = new Point(304, 238);
+                                    grpWireTwist.Enabled = true;
+                                    txtPitchDim.Text = "0";
+                                    txtLeftDim.Text = "0";
+                                    txtRightDim.Text = "0";
+                                    lblWTRemarks.Text = "";
+                                }
+
                                 registry.WriteRegistry("testCounter", "0");
                             }
                             else
                             {
-                            InputQty:
-                                string input = "0";
-                                DialogBox.ShowInputDialogBox(ref input, "Please input additional quantity.", "Message Confirmation", 300, 110);
-
-                                if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
-                                {
-                                    // not greater than 9
-                                    if (input.Length > 1)
-                                    {
-                                        MessageBox.Show(this, "Maximum quantity is not greater than 9.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    // not less than or equal to 0
-                                    if (input.Length <= 0)
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be less than or equal to 0.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-
-                                    if (value <= registry.TestCounter && value != 0)
-                                    {
-                                        lblRemarks.Text = "Pedal is in action";
-
-                                        var counter1 = registry.TestCounter - value;
-                                        registry.WriteRegistry("testCounter", counter1.ToString());
-
-                                        // activate pedal to continue
-                                        registry.WriteRegistry("pedalStatus", "True");
-                                        registry.WriteRegistry("processStage", "B3");
-
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show(this, "Quantity should not be equal to 0 or greater than the accumulated count", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        goto InputQty;
-                                    }
-                                }
-                                else
-                                {
-                                    MessageBox.Show(this, "Please input a valid value", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    goto InputQty;
-                                }
+                                registry.WriteRegistry("processStage", "B3C");
+                                lblInputRemarks.Text = "";
+                                lblInputLabel.Text = "Please input additional quantity";
+                                grpInput.Text = "Additional Piece";
+                                txtInput.Text = "0";
                             }
+
+                            goto proceed;
+                        }
+
+                        // show input panel
+                        if (registry.ProcessStage == "B3C" && !registry.PedalStatus)
+                        {
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For additional quantity execution";
+
+                            grpInput.Location = new Point(12, 238);
+                            lblInputLabel.Text = "Please input additional quantity";
+                            grpInput.Text = "Additional Piece";
+                            grpInput.Enabled = true;
+
+                            goto proceed;
+                        }
+
+                        if (registry.ProcessStage == "B3D" && !registry.PedalStatus)
+                        {
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For additional quantity execution";
+
+                            registry.WriteRegistry("pedalStatus", "True");
+                            registry.WriteRegistry("processStage", "B3");
+
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // Caliper Test message confirmation
-                        if (registry.ProcessStage == "B4A")
+                        // <-- disregard -->
+                        if (registry.ProcessStage == "B4A" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
-                            DialogResult result = MessageBox.Show(this, "Please perform (" + _lastPcsInitCount.ToString() + ") CALIPER/PULL TEST input.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
+                            
+                            DialogResult result = MessageBox.Show(this, "Please perform (" + _lastPcsInitCount.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
                             if (result == DialogResult.OK)
                             {
                                 registry.WriteRegistry("processStage", "B4B");
                             }
+
+                            goto proceed;
                         }
 
                         // Caliper Test execution
-                        if (registry.ProcessStage == "B4B")
+                        if (registry.ProcessStage == "B4B" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
+
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // Caliper Test validation if no data within specific timeframe
-                        if (registry.ProcessStage == "B4C")
+                        if (registry.ProcessStage == "B4C" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
 
                             DialogResult result = MessageBox.Show(this, "Do you want to continue CALIPER execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                                 registry.WriteRegistry("processStage", "B4B");
                             else
-                                MessageBox.Show(this, "Please continue CALIPER execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show(this, "Please continue CALIPER execution", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                            goto proceed;
                         }
 
                         // Pull Test message confirmation
-                        if (registry.ProcessStage == "B5A")
+                        if (registry.ProcessStage == "B5A" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
+
                             registry.WriteRegistry("processStage", "B5B");
+
+                            goto proceed;
                         }
 
                         // Pull Test execution
-                        if (registry.ProcessStage == "B5B")
+                        if (registry.ProcessStage == "B5B" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
+
+                            grpInput.Enabled = false;
+                            resetGroupInput();
+
+                            goto proceed;
                         }
 
                         // Pull Test validation if no data within specific timeframe
                         if (registry.ProcessStage == "B5C")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
 
                             DialogResult result = MessageBox.Show(this, "Do you want to continue PULL TEST execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                                 registry.WriteRegistry("processStage", "B5B");
                             else
-                                MessageBox.Show(this, "Please continue PULL TEST execution.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show(this, "Please continue PULL TEST execution", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                            goto proceed;
+                        }
+
+                        // Wire Twist message confirmation
+                        if (registry.ProcessStage == "B6A" && _machineType == "WT")
+                        {
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
+
+                            registry.WriteRegistry("processStage", "B6B");
+                            grpWireTwist.Location = new Point(12, 238);
+
+                            goto proceed;
+                        }
+
+                        // Wire Twist execution
+                        if (registry.ProcessStage == "B6B" && _machineType == "WT")
+                        {
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
+
+                            grpWireTwist.Enabled = true;
+                            grpWireTwist.Location = new Point(12, 238);
+
+                            goto proceed;
                         }
 
                         // Finished Job Message
                         if (registry.ProcessStage == "B8")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() + ".";
+                            lblStatus.Text = "Production";
+                            lblRemarks.Text = "For " + ((_machineType == "RG") ? "PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString() : "WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString());
 
                             btnStart.Enabled = false;
                             btnTerminate.Enabled = false;
+
+                            grpInput.Enabled = false;
+                            grpWireTwist.Enabled = false;
+                            txtPitchDim.Text = "0";
+                            txtLeftDim.Text = "0";
+                            txtRightDim.Text = "0";
+                            txtInput.Text = "0";
+                            resetGroupInput();
 
                         InputEndJob:
                             DialogResult result = MessageBox.Show(this, _endJobMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
@@ -753,7 +986,7 @@ namespace RenTradeWindowForm
                 } 
                 else
                 {
-                    lblRemarks.Text = "A valid software license could not be found.";
+                    lblRemarks.Text = "A valid software license could not be found";
 
                     btnStart.Enabled = false;
                     btnTerminate.Enabled = false;
@@ -773,19 +1006,19 @@ namespace RenTradeWindowForm
                 switch (registry.IOBoardStatus)
                 {
                     case "X1":
-                        MessageBox.Show(this, "IO Device is not properly set.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(this, "IO Device is not properly set", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     case "X2":
-                        MessageBox.Show(this, "Com Port is not properly set.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(this, "Com Port is not properly set", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     case "X3":
-                        MessageBox.Show(this, "IO Device error upon Initialize.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(this, "IO Device error upon Initialize", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     case "X4":
                         MessageBox.Show(this, "IO Device port is closed", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     case "X5":
-                        MessageBox.Show(this, "IO Device error upon Closing.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(this, "IO Device error upon Closing", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     default:
                         break;
@@ -832,7 +1065,7 @@ namespace RenTradeWindowForm
                         ptStripMenuItem.Enabled = false;
                         cmStripMenuItem.Enabled = false;
 
-                        if (!registry.PedalStatus && !registry.IsProd && registry.ProcessStage == "A1")
+                        if (!registry.PedalStatus && !registry.IsProd && registry.ProcessStage == "A1" && registry.ProcessCounter == 0)
                         {
                             btnStart.Enabled = true;
                             btnTerminate.Enabled = false;
@@ -898,6 +1131,32 @@ namespace RenTradeWindowForm
                         tsStatusLabel.Text = (registry.PedalStatus) ? "Pedal is active" : "Pedal is disabled";
                         tsStatusLabel.ToolTipText = "Last Activity";
                         tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject((registry.PedalStatus) ? "green" : "red"));
+                                               
+                        // Change the color code of the label and remarks
+                        if(registry.ReelStatus)
+                        {
+                            if (registry.IsProd)
+                            {
+                                if(registry.ProcessStage[0] != 'C')
+                                {
+                                    lblStatus.ForeColor = Color.ForestGreen;
+                                    lblRemarks.ForeColor = Color.ForestGreen;
+                                } else
+                                {
+                                    lblStatus.ForeColor = Color.OrangeRed;
+                                    lblRemarks.ForeColor = Color.OrangeRed;
+                                }
+                            }
+                            else
+                            {
+                                lblStatus.ForeColor = (_machineType == "RG")? Color.Black : Color.ForestGreen;
+                                lblRemarks.ForeColor = (_machineType == "RG")? Color.Black : Color.ForestGreen;
+                            }
+                        } else
+                        {
+                            lblStatus.ForeColor = Color.Red;
+                            lblRemarks.ForeColor = Color.Red;
+                        }
                     }                    
                 } 
                 else
@@ -924,7 +1183,7 @@ namespace RenTradeWindowForm
             }
 
             lblCounter.Text = (registry.IsProd) ? registry.ProcessCounter.ToString() : "0";
-            lblQuota.Text = registry.QuotaCounter.ToString();
+            lblQuota.Text = (_midPcsInitCount != 0)? registry.QuotaCounter.ToString() : "N/A";
 
             tsDateTimeLabel.Text = System.DateTime.Today.ToLongDateString();
             tsDateTimeLabel.ToolTipText = "Last Activity";
@@ -935,8 +1194,29 @@ namespace RenTradeWindowForm
             backgroundWorker.RunWorkerAsync();
         }
 
+        private void resetGroupInput()
+        {
+            // Wire Twist Group
+            lblWTRemarks.Text = "";
+            grpWireTwist.Location = new Point(330, 279);
+            //txtPitchDim.Text = "0";
+            //txtLeftDim.Text = "0";
+            //txtRightDim.Text = "0";
+
+            // Input Group
+            lblInputRemarks.Text = "";
+            grpInput.Location = new Point(330, 136);
+            lblInputLabel.Text = "Please input additional quantity";
+            grpInput.Text = "Additional Piece";
+            //txtInput.Text = "0";
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
+            grpInput.Enabled = false;
+            grpWireTwist.Enabled = false;
+            resetGroupInput();
+
             btnStart.Enabled = false;
             btnTerminate.Enabled = true;
 
@@ -945,6 +1225,12 @@ namespace RenTradeWindowForm
             ptStripMenuItem.Enabled = false;
             cmStripMenuItem.Enabled = false;
             registry.WriteRegistry("pedalStatus", "True");
+
+            //if(this._machineType == "WT")
+            //{
+            //    registry.WriteRegistry("processStage", "B1");
+            //    registry.WriteRegistry("isProd", "True");
+            //}
         }
 
         private void btnTerminate_Click(object sender, EventArgs e)
@@ -952,6 +1238,10 @@ namespace RenTradeWindowForm
             DialogResult result = MessageBox.Show("Do you want to terminate this job?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (result == DialogResult.Yes)
             {
+                grpInput.Enabled = false;
+                grpWireTwist.Enabled = false;
+                resetGroupInput();
+
                 stStripMenuItem.Enabled = true;
                 tmStripMenuItem.Enabled = false;
                 ptStripMenuItem.Enabled = false;
@@ -1012,7 +1302,7 @@ namespace RenTradeWindowForm
         {
             menuStrip.Enabled = false;
 
-            DialogResult result = MessageBox.Show("Add additional test pcs?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            DialogResult result = MessageBox.Show("Add additional test pc(s)?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (result == DialogResult.Yes)
             {
                 string input = "0";
@@ -1051,30 +1341,31 @@ namespace RenTradeWindowForm
                             var counter1 = registry.ProcessCounter - value;
                             registry.WriteRegistry("processCounter", counter1.ToString());
 
-                            if (value >= registry.TestCounter)
-                                registry.WriteRegistry("testCounter", "0");
-                            else
-                            {
-                                counter1 = registry.TestCounter - value;
-                                registry.WriteRegistry("testCounter", counter1.ToString());
-                            }
+                            //if (value >= registry.TestCounter)
+                            //    registry.WriteRegistry("testCounter", "0");
+                            //else
+                            //{
+                            //    counter1 = registry.TestCounter - value;
+                            //    registry.WriteRegistry("testCounter", counter1.ToString());
+                            //}
 
+                            registry.WriteRegistry("testCounter", "0");
                             // activate pedal to continue
                             registry.WriteRegistry("pedalStatus", "True");
 
-                            string[] stageArray1 = { "A4A", "A4B", "A4C", "A5A", "A5B", "A5C", "A8" };
+                            string[] stageArray1 = { "A4A", "A4B", "A4C", "A5A", "A5B", "A5C", "A6A", "A6B", "A8" };
                             if (stageArray1.Contains(registry.ProcessStage))
                             {
                                 registry.WriteRegistry("processStage", "A1");
                             }
 
-                            string[] stageArray2 = { "B4A", "B4B", "B4C", "B5A", "B5B", "B5C", "B8" };
+                            string[] stageArray2 = { "B4A", "B4B", "B4C", "B5A", "B5B", "B5C", "B6A", "B6B", "B8" };
                             if (stageArray2.Contains(registry.ProcessStage))
                             {
                                 registry.WriteRegistry("processStage", "B1");
                             }
 
-                            string[] stageArray3 = { "C4A", "C4B", "C4C", "C5A", "C5B", "C5C", "C8" };
+                            string[] stageArray3 = { "C4A", "C4B", "C4C", "C5A", "C5B", "C5C", "C6A", "C6B", "C8" };
                             if (stageArray3.Contains(registry.ProcessStage))
                             {
                                 registry.WriteRegistry("processStage", "C2");
@@ -1088,9 +1379,9 @@ namespace RenTradeWindowForm
                     }
                     else
                     {
-                        string[] stageArray0 = { "B4B", "B5B", "C4B", "C5B" };
-                        string[] stageArray1 = { "B4B", "B5B" };
-                        string[] stageArray2 = { "C4B", "C5B" };
+                        string[] stageArray0 = { "B4B", "B5B", "B6B", "C4B", "C5B", "C6B" };
+                        string[] stageArray1 = { "B4B", "B5B", "B6B" };
+                        string[] stageArray2 = { "C4B", "C5B", "C6B" };
 
                         if (stageArray0.Contains(registry.ProcessStage))
                         {
@@ -1098,7 +1389,6 @@ namespace RenTradeWindowForm
 
                             if (stageArray1.Contains(registry.ProcessStage))
                                 initCount = _lastPcsInitCount;
-
 
                             if (stageArray2.Contains(registry.ProcessStage))
                                 initCount = _midPcsInitCount;
@@ -1151,6 +1441,345 @@ namespace RenTradeWindowForm
         {
             LicenseRegForm licRegForm = new LicenseRegForm();
             licRegForm.ShowDialog();
+        }
+
+        private void btnOk_Click(object sender, EventArgs e)
+        {
+            // Reel Status
+            if(!registry.ReelStatus)
+            {
+                string input = txtInput.Text;
+
+                if (!String.IsNullOrEmpty(input) && learjob.IsBOMExist(input))
+                {
+                    registry.WriteRegistry("reelStatus", "True");
+                    registry.WriteRegistry("pedalStatus", "True");
+
+                    grpInput.Enabled = false;
+                    lblInputRemarks.Text = "";
+                    resetGroupInput();
+                }
+                else
+                {
+                    lblInputRemarks.Text = "BOM value does not exist!";
+                    txtInput.Text = "";
+                    return;
+                }
+            } 
+            else
+            {
+                grpInput.Text = "Additional Piece";
+
+                // First Piece
+                if (registry.ProcessStage == "A2C")
+                {
+                    lblInputLabel.Text = "Please input additional quantity";
+                    string input = txtInput.Text;
+
+                    if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
+                    {
+                        // not greater than 9
+                        if (value > 9)
+                        {
+                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            return;
+                        }
+
+                        // not less than or equal to 0
+                        if (input.Length <= 0)
+                        {
+                            lblInputRemarks.Text = "Quantity should not be less than or equal to 0.";
+                            return;
+                        }
+
+                        if (value <= registry.ProcessCounter && value != 0)
+                        {
+                            var counter1 = registry.ProcessCounter - value;
+                            registry.WriteRegistry("processCounter", counter1.ToString());
+
+                            // activate pedal to continue
+                            //grpInput.Enabled = false;
+                            txtInput.Text = "0";
+                            //resetGroupInput();
+                            registry.WriteRegistry("processStage", "A2D");
+                        }
+                        else
+                        {
+                            lblInputRemarks.Text = "Quantity should not be greater than the accumulated count";
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        lblInputRemarks.Text = "Please input a valid value";
+                        return;
+                    }
+                }
+
+                // Last Piece
+                if (registry.ProcessStage == "B2C" && _machineType == "RG")
+                {
+                    lblInputLabel.Text = "Please input additional quantity";
+                    string input = txtInput.Text;
+
+                    if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
+                    {
+                        // not greater than 9
+                        if (value > 9)
+                        {
+                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            return;
+                        }
+
+                        // not less than or equal to 0
+                        if (value <= 0)
+                        {
+                            lblInputRemarks.Text = "Quantity should not be less than or equal to 0.";
+                            return;
+                        }
+
+                        if (value <= registry.ProcessCounter && value != 0)
+                        {
+                            var counter1 = registry.ProcessCounter - value;
+                            registry.WriteRegistry("processCounter", counter1.ToString());
+
+                            if (registry.QuotaCounter >= value)
+                            {
+                                counter1 = registry.QuotaCounter - value;
+                                registry.WriteRegistry("quotaCounter", counter1.ToString());
+                            }
+                            // activate pedal to continue
+                            //grpInput.Enabled = false;
+                            txtInput.Text = "0";
+                            //resetGroupInput();
+                            registry.WriteRegistry("processStage", "B2D");
+                            return;
+                        }
+                        else
+                        {
+                            lblInputRemarks.Text = "Quantity should not be greater than the accumulated count";
+                            return;
+                        }                            
+                    }
+                    else
+                    {
+                        lblInputRemarks.Text = "Please input a valid value";
+                        return;
+                    }
+                }
+
+                if (registry.ProcessStage == "B3C")
+                {
+                    lblInputLabel.Text = "Please input additional quantity";
+                    string input = txtInput.Text;
+
+                    if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
+                    {
+                        // not greater than 9
+                        if (value > 9)
+                        {
+                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            return;
+                        }
+
+                        // not less than or equal to 0
+                        if (input.Length <= 0)
+                        {
+                            lblInputRemarks.Text = "Quantity should not be less than or equal to 0.";
+                            return;
+                        }
+
+                        // if machine type is regular then perform normal process
+                        if(_machineType == "RG")
+                        {
+                            if (value <= registry.TestCounter && value != 0)
+                            {
+                                var counter1 = registry.TestCounter - value;
+                                registry.WriteRegistry("testCounter", counter1.ToString());
+
+                                // activate pedal to continue
+                                //grpInput.Enabled = false;
+                                txtInput.Text = "0";
+                                //resetGroupInput();
+                                registry.WriteRegistry("processStage", "B3D");
+                            }
+                            else
+                            {
+                                lblInputRemarks.Text = "Quantity should not be greater than the accumulated count";
+                                return;
+                            }
+                        } 
+                        else
+                        {
+                            if (value <= registry.ProcessCounter && value != 0)
+                            {
+                                var counter1 = registry.ProcessCounter - value;
+                                registry.WriteRegistry("processCounter", counter1.ToString());
+
+                                if (registry.QuotaCounter >= value)
+                                {
+                                    counter1 = registry.QuotaCounter - value;
+                                    registry.WriteRegistry("quotaCounter", counter1.ToString());
+                                }
+
+                                if (value <= registry.TestCounter && value != 0)
+                                {
+                                    var counter0 = registry.TestCounter - value;
+                                    registry.WriteRegistry("testCounter", counter0.ToString());
+                                }
+                                else
+                                    registry.WriteRegistry("testCounter", "0");
+
+                                // activate pedal to continue
+                                //grpInput.Enabled = false;
+                                txtInput.Text = "0";
+                                //resetGroupInput();
+                                registry.WriteRegistry("processStage", "B2D");
+                                return;
+                            }
+                            else
+                            {
+                                lblInputRemarks.Text = "Quantity should not be greater than the accumulated count";
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        lblInputRemarks.Text = "Please input a valid value";
+                        return;
+                    }
+                }
+
+                // Mid Piece
+                if (registry.ProcessStage == "C3C")
+                {
+                    lblInputLabel.Text = "Please input additional quantity";
+                    string input = txtInput.Text;
+
+                    if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
+                    {
+                        // not greater than 9
+                        if (value > 9)
+                        {
+                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            return;
+                        }
+
+                        // not less than or equal to 0
+                        if (input.Length <= 0)
+                        {
+                            lblInputRemarks.Text = "Quantity should not be less than or equal to 0.";
+                            return;
+                        }
+
+                        if (value <= registry.TestCounter && value != 0)
+                        {
+                            var counter1 = registry.TestCounter - value;
+                            registry.WriteRegistry("testCounter", counter1.ToString());
+
+                            // activate pedal to continue
+                            //grpInput.Enabled = false;
+                            txtInput.Text = "0";
+                            //resetGroupInput();
+                            registry.WriteRegistry("processStage", "C3D");
+                        }
+                        else
+                        {
+                            lblInputRemarks.Text = "Quantity should not be greater than the accumulated count";
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        lblInputRemarks.Text = "Please input a valid value";
+                        return;
+                    }
+                }
+            }            
+        }
+
+        private void txtInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnOk_Click(this, new EventArgs());
+            }
+        }
+
+        private void btnWireTwist_Click(object sender, EventArgs e)
+        {
+            // Wire Twist Input
+            string[] stageArray1 = { "A6B", "B6B", "C6B" };
+
+            if (stageArray1.Contains(registry.ProcessStage) && _machineType == "WT")
+            {
+                string input1 = txtPitchDim.Text;
+                string input2 = txtLeftDim.Text;
+                string input3 = txtRightDim.Text;
+
+                //if (!String.IsNullOrEmpty(txtInput.Text) && matches.Count > 0)
+                if ((decimal.TryParse(input1, out decimal p) && !String.IsNullOrEmpty(input1)) &&
+                    (decimal.TryParse(input2, out decimal l) && !String.IsNullOrEmpty(input2)) &&
+                    (decimal.TryParse(input3, out decimal r) && !String.IsNullOrEmpty(input3)) )
+                {
+                    if(p == 0 || l == 0 || r == 0)
+                    {
+                        lblWTRemarks.Text = "Value(s) should not be less than or equal to 0.";
+                        return;
+                    }
+
+                    int value = _wireTwistInitCount;
+
+                    var counter1 = registry.TestCounter + 1;
+                    if(counter1 <= value && (p != 0 || l != 0 || r!=0))
+                    {
+                        registry.WriteRegistry("testCounter", counter1.ToString());
+
+                        // log results
+                        //grpWireTwist.Enabled = false; 
+                        txtPitchDim.Text = "0";
+                        txtLeftDim.Text = "0";
+                        txtRightDim.Text = "0";
+                        //resetGroupInput();
+                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + p + ":::" + l + ":::" + r + ":::" + learjob.OrderNumber + ":::" + learjob.LeadSet + "]");
+                    }
+                    else
+                    {
+                        lblWTRemarks.Text = "Quantity should not be greater than the accumulated count";
+                        return;
+                    }
+                }
+                else
+                {
+                    lblWTRemarks.Text = "Please input a valid decimal value";
+                    return;
+                }
+            }
+        }
+
+        private void txtPitchDim_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnWireTwist_Click(this, new EventArgs());
+            }
+        }
+
+        private void txtLeftDim_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnWireTwist_Click(this, new EventArgs());
+            }
+        }
+
+        private void txtRightDim_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnWireTwist_Click(this, new EventArgs());
+            }
         }
     }
 }

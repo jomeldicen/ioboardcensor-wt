@@ -10,6 +10,7 @@ namespace RenTradeWindowService
     {
         public string EnvironmentMode { get; set; }
         public string MachineName { get; set; }
+        public string MachineType { get; set; }
         public string LogPath { get; set; }
         public string DashboardFormPath { get; set; }
         public string MessageQueueName { get; set; }
@@ -28,6 +29,7 @@ namespace RenTradeWindowService
         public int MidPcsInitCount { get; set; }
         public int LastPcsInitCount { get; set; }
         public int QuotaInitCount { get; set; }
+        public int WireTwistInitCount { get; set; }
         public string TestJobNos { get; set; }
     }
 }
