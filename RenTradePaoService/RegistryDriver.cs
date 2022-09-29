@@ -27,6 +27,7 @@ namespace RenTradeWindowService
 
         public string IOBoardStatus { get; private set; }
         public string OldOrderNos { get; private set; }
+        public string JobInfo { get; private set; }
 
         private readonly string _logPath;
 
@@ -92,6 +93,7 @@ namespace RenTradeWindowService
 
                     this.IOBoardStatus = key.GetValue("ioBoardStatus").ToString();
                     this.OldOrderNos = key.GetValue("oldOrderNos").ToString();
+                    this.JobInfo = key.GetValue("jobInfo").ToString();
 
                     key.Close();
                 }

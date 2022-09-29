@@ -215,3 +215,4 @@ E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Debug\net5.0-windows\
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Debug\net5.0-windows\RenTradePaoService.exe
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Debug\net5.0-windows\RenTradePaoService.dll
 E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\bin\Debug\net5.0-windows\RenTradePaoService.pdb
+E:\Development\GitHub\ioboardcensor\RenTradeWindowForm\obj\Debug\net5.0-windows\RenTradeWindowForm.TestForm.resources
