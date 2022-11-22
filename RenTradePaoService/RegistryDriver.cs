@@ -22,6 +22,7 @@ namespace RenTradeWindowService
         public bool IsPullTest { get; private set; }
         public int TestCounter { get; set; }
         public int QuotaCounter { get; set; }
+        public int CycleCounter { get; set; }
         public string ProcessStage { get; private set; }
         public bool ReelStatus { get; private set; }
 
@@ -58,6 +59,7 @@ namespace RenTradeWindowService
 
                 key.SetValue("testCounter", "0");               // number of pull test item on first Pcs
                 key.SetValue("quotaCounter", "0");              // number of cummulative production count
+                key.SetValue("cycleCounter", "0");              // number of cycle count
 
                 key.SetValue("processStage", "A1");              // A1-validation if achieve test qty, A2-1st pull test, A3-1st calipher test, 
                                                                  // B1-validation if achieve prod qty, B2-2nd pull test, B3-2nd calipher test, B4-
@@ -86,7 +88,8 @@ namespace RenTradeWindowService
                     this.IsPullTest = Convert.ToBoolean(key.GetValue("isPullTest"));                        // true means reel material is detected
 
                     this.TestCounter = Convert.ToInt16(key.GetValue("testCounter"));                        // number of pull test item on first Pcs
-                    this.QuotaCounter = Convert.ToInt16(key.GetValue("quotaCounter"));                      // number of cummulative production count                    
+                    this.QuotaCounter = Convert.ToInt16(key.GetValue("quotaCounter"));                      // number of cummulative production count    
+                    this.CycleCounter = Convert.ToInt16(key.GetValue("cycleCounter"));                      // number of cycle wt count                    
                     this.ProcessStage = key.GetValue("processStage").ToString();                            // get the current stage
 
                     this.ReelStatus = Convert.ToBoolean(key.GetValue("reelStatus"));                        // Check Reel Status
@@ -129,6 +132,7 @@ namespace RenTradeWindowService
             this.WriteRegistry("pedalStatus", "False");
             this.WriteRegistry("processCounter", "0");
             this.WriteRegistry("testCounter", "0");
+            this.WriteRegistry("cycleCounter", "0");
             this.WriteRegistry("processStage", "A1");
 
             this.WriteRegistry("reelStatus", "True");

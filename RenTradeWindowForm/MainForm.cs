@@ -91,13 +91,17 @@ namespace RenTradeWindowForm
                     return;
                 }
             }
-
             //this.TopMost = true;
             //this.TopLevel = true;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            groupBox3.Text = (_machineType == "RG") ? "Counter" : "Cycle Count";
+            groupBox4.Text = (_machineType == "RG") ? "Mid-Piece Count" : "Counter";
+            groupBox3.Visible = (_machineType == "RG") ? true : false;
+            groupBox4.Visible = (_machineType == "RG") ? true : false;
+            lblRemarks.Visible = (_machineType == "RG") ? true : false;
             backgroundWorker.RunWorkerAsync();
         }
 
@@ -173,6 +177,7 @@ namespace RenTradeWindowForm
                 // means license is valid
                 if(this._isLicense)
                 {
+
                     // reel section
                     if (!registry.ReelStatus)
                     {
@@ -191,7 +196,8 @@ namespace RenTradeWindowForm
                         txtInput.Focus();
 
                         goto proceed;
-                    } 
+                    }
+                    //groupBox3.Text = (_machineType == "RG") ? "Counter" : "Cycle Count";
 
                     // Test Mode
                     if (!registry.IsProd)
@@ -223,6 +229,7 @@ namespace RenTradeWindowForm
                         if (registry.ProcessStage == "A2" && !registry.PedalStatus)
                         {
                             lblRemarks.Text = "For quantity validation";
+                            lblQuota.Text = (_machineType == "WT") ? (Convert.ToInt16(lblQuota.Text) + 1).ToString() : lblQuota.Text;
 
                             DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
@@ -231,6 +238,7 @@ namespace RenTradeWindowForm
                                     registry.WriteRegistry("processStage", "A4B");
                                 else
                                 {
+                                    registry.WriteRegistry("cycleCounter", "0");
                                     registry.WriteRegistry("processStage", "A6B");
 
                                     grpWireTwist.Location = new Point(12, 238);
@@ -669,7 +677,14 @@ namespace RenTradeWindowForm
                         {
                             // activate pedal to continue
                             lblStatus.Text = "Production";
-                            lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                            if(_machineType == "RG")
+                                lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                            else
+                            {
+                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
+                                lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblBatchTarget.Text;
+                            }
 
                             registry.WriteRegistry("pedalStatus", "True");
 
@@ -680,7 +695,15 @@ namespace RenTradeWindowForm
                         {
                             // activate pedal to continue
                             lblStatus.Text = "Production";
-                            lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                            if(_machineType == "RG")
+                                lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                            else
+                            {
+                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
+                                lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblBatchTarget.Text;
+                            }
+
 
                             grpWireTwist.Enabled = false;
                             grpInput.Enabled = false;
@@ -721,7 +744,10 @@ namespace RenTradeWindowForm
                             } 
                             else
                             {
-                                lblRemarks.Text = "For last pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
+                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblBatchTarget.Text;
+
                                 // activate pedal to continue
                                 registry.WriteRegistry("pedalStatus", "True");
                                 registry.WriteRegistry("processStage", "B3");
@@ -765,7 +791,13 @@ namespace RenTradeWindowForm
                             if(_machineType == "RG")
                                 lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
                             else
-                                lblRemarks.Text = "For last pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                            {
+                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
+                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblBatchTarget.Text;
+                                //lblQuota.Text = (Convert.ToInt16(lblQuota.Text) + 1).ToString();
+                            }
+                                
 
                             goto proceed;
                         }
@@ -777,7 +809,11 @@ namespace RenTradeWindowForm
                             if (_machineType == "RG")
                                 lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
                             else
-                                lblRemarks.Text = "For last pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                            {
+                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
+                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblBatchTarget.Text;
+                            }
 
                             DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
@@ -1131,9 +1167,9 @@ namespace RenTradeWindowForm
                         tsStatusLabel.Text = (registry.PedalStatus) ? "Pedal is active" : "Pedal is disabled";
                         tsStatusLabel.ToolTipText = "Last Activity";
                         tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject((registry.PedalStatus) ? "green" : "red"));
-                                               
+
                         // Change the color code of the label and remarks
-                        if(registry.ReelStatus)
+                        if (registry.ReelStatus)
                         {
                             if (registry.IsProd)
                             {
@@ -1183,7 +1219,10 @@ namespace RenTradeWindowForm
             }
 
             lblCounter.Text = (registry.IsProd) ? registry.ProcessCounter.ToString() : "0";
-            lblQuota.Text = (_midPcsInitCount != 0)? registry.QuotaCounter.ToString() : "N/A";
+            if (_machineType == "RG")
+                lblQuota.Text = (_midPcsInitCount != 0) ? registry.QuotaCounter.ToString() : "N/A";
+            else
+                lblQuota.Text = registry.CycleCounter.ToString();
 
             tsDateTimeLabel.Text = System.DateTime.Today.ToLongDateString();
             tsDateTimeLabel.ToolTipText = "Last Activity";
@@ -1496,11 +1535,10 @@ namespace RenTradeWindowForm
                         {
                             var counter1 = registry.ProcessCounter - value;
                             registry.WriteRegistry("processCounter", counter1.ToString());
+                            registry.WriteRegistry("cycleCounter", "0");
 
                             // activate pedal to continue
-                            //grpInput.Enabled = false;
                             txtInput.Text = "0";
-                            //resetGroupInput();
                             registry.WriteRegistry("processStage", "A2D");
                         }
                         else
@@ -1542,6 +1580,7 @@ namespace RenTradeWindowForm
                         {
                             var counter1 = registry.ProcessCounter - value;
                             registry.WriteRegistry("processCounter", counter1.ToString());
+                            registry.WriteRegistry("cycleCounter", "0");
 
                             if (registry.QuotaCounter >= value)
                             {
@@ -1549,9 +1588,7 @@ namespace RenTradeWindowForm
                                 registry.WriteRegistry("quotaCounter", counter1.ToString());
                             }
                             // activate pedal to continue
-                            //grpInput.Enabled = false;
                             txtInput.Text = "0";
-                            //resetGroupInput();
                             registry.WriteRegistry("processStage", "B2D");
                             return;
                         }
@@ -1596,11 +1633,10 @@ namespace RenTradeWindowForm
                             {
                                 var counter1 = registry.TestCounter - value;
                                 registry.WriteRegistry("testCounter", counter1.ToString());
+                            registry.WriteRegistry("cycleCounter", "0");
 
                                 // activate pedal to continue
-                                //grpInput.Enabled = false;
                                 txtInput.Text = "0";
-                                //resetGroupInput();
                                 registry.WriteRegistry("processStage", "B3D");
                             }
                             else
@@ -1615,6 +1651,7 @@ namespace RenTradeWindowForm
                             {
                                 var counter1 = registry.ProcessCounter - value;
                                 registry.WriteRegistry("processCounter", counter1.ToString());
+                                registry.WriteRegistry("cycleCounter", "0");
 
                                 if (registry.QuotaCounter >= value)
                                 {
@@ -1631,9 +1668,7 @@ namespace RenTradeWindowForm
                                     registry.WriteRegistry("testCounter", "0");
 
                                 // activate pedal to continue
-                                //grpInput.Enabled = false;
                                 txtInput.Text = "0";
-                                //resetGroupInput();
                                 registry.WriteRegistry("processStage", "B2D");
                                 return;
                             }
@@ -1677,11 +1712,10 @@ namespace RenTradeWindowForm
                         {
                             var counter1 = registry.TestCounter - value;
                             registry.WriteRegistry("testCounter", counter1.ToString());
+                            registry.WriteRegistry("cycleCounter", "0");
 
                             // activate pedal to continue
-                            //grpInput.Enabled = false;
                             txtInput.Text = "0";
-                            //resetGroupInput();
                             registry.WriteRegistry("processStage", "C3D");
                         }
                         else

@@ -37,6 +37,7 @@ namespace RenTradeWindowService
         private readonly int _lastPcsInitCount;         // prod pcs
         private readonly int _quotaInitCount;
         private readonly int _wireTwistInitCount;
+        private readonly int _wireTwistCycleCount;
 
         private readonly string _comPort;
 
@@ -72,6 +73,7 @@ namespace RenTradeWindowService
             _lastPcsInitCount = _options.Value.LastPcsInitCount;
             _quotaInitCount = _options.Value.QuotaInitCount;
             _wireTwistInitCount = _options.Value.WireTwistInitCount;
+            _wireTwistCycleCount = _options.Value.WireTwistCycleCount;
 
             _comPort = options.Value.ComPort;
 
@@ -204,11 +206,14 @@ namespace RenTradeWindowService
                         // in Test Mode
                         if (!registry.IsProd)
                         {
+                            registry.ReadRegistry();
                             // check if pedal hit counter exceeds the default initial value
                             if (registry.ProcessCounter >= this._firstPcsInitCount)
                             {
                                 // to avoid enable start button
-                                if (registry.ProcessCounter == this._firstPcsInitCount && registry.ProcessStage == "A2") { }
+                                if (registry.ProcessCounter == this._firstPcsInitCount && (registry.ProcessStage == "A2")) {
+                                
+                                }
                                 else
                                     registry.WriteRegistry("pedalStatus", "False");
 
@@ -376,38 +381,38 @@ namespace RenTradeWindowService
                             //*********************** End Daily Quota Section ***********************//
 
                             // check if pedal hit counter exceeds the production quantity
-                            int bundleSize = (_machineType == "RG")? learjob.BundleSize : learjob.BundleSize - _lastPcsInitCount;
-                            
-                            if (registry.ProcessCounter >= bundleSize)
-                            {   
-                                //*********************** Start Production Section ***********************//
-                                // confirmation message if last pcs counter is equal to the nos of initial config.
-                                if (registry.ProcessCounter >= bundleSize && registry.ProcessStage == "B1")
+                            int bundleSize = learjob.BundleSize;
+
+                            if(_machineType == "RG")
+                            {
+                                if (registry.ProcessCounter >= bundleSize)
                                 {
-                                    registry.WriteRegistry("processStage", "B2");
-                                    registry.WriteRegistry("pedalStatus", "False");
-                                    registry.WriteRegistry("processCounter", bundleSize.ToString());
+                                    //*********************** Start Production Section ***********************//
+                                    // confirmation message if last pcs counter is equal to the nos of initial config.
+                                    if (registry.ProcessCounter >= bundleSize && registry.ProcessStage == "B1")
+                                    {
+                                        registry.WriteRegistry("processStage", "B2");
+                                        registry.WriteRegistry("pedalStatus", "False");
+                                        registry.WriteRegistry("processCounter", bundleSize.ToString());
 
-                                    goto proceed;
-                                }
+                                        goto proceed;
+                                    }
 
-                                // execute additional pcs
-                                if (registry.TestCounter >= _lastPcsInitCount && registry.ProcessStage == "B3")
-                                {
-                                    registry.WriteRegistry("processStage", "B3B");
-                                    registry.WriteRegistry("pedalStatus", "False");
+                                    // execute additional pcs
+                                    if (registry.TestCounter >= _lastPcsInitCount && registry.ProcessStage == "B3")
+                                    {
+                                        registry.WriteRegistry("processStage", "B3B");
+                                        registry.WriteRegistry("pedalStatus", "False");
 
-                                    goto proceed;
-                                }
-                               
-                                // Regular Machine
-                                if (_machineType == "RG")
-                                { 
+                                        goto proceed;
+                                    }
+
+                                    // Regular Machine
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
                                     if (registry.ProcessCounter == bundleSize && (registry.ProcessStage == "B4B" || registry.ProcessStage == "B5B" || registry.ProcessStage == "B6B"))
                                     {
-                                    // check if pull test counter is equal to last pcs count
-                                    lastpcsLabelCounter:
+                                        // check if pull test counter is equal to last pcs count
+                                        lastpcsLabelCounter:
                                         if (registry.TestCounter <= _lastPcsInitCount)
                                         {
 
@@ -440,9 +445,44 @@ namespace RenTradeWindowService
 
                                         goto proceed;
                                     }
+                                    //*********************** End Production Section ***********************//
                                 }
                                 else
                                 {
+                                    if (registry.ProcessStage == "B1" && registry.ProcessCounter != 0)
+                                    {
+                                        registry.WriteRegistry("pedalStatus", "True");
+                                        registry.ReadRegistry();
+                                        goto proceed;
+                                    }
+                                }
+                            } 
+                            else // machine time WT
+                            {
+                                int cycleCount = (_wireTwistInitCount > 0) ? learjob.BundleSize / _wireTwistInitCount : 0;
+                                bundleSize = (learjob.BundleSize % _wireTwistInitCount == 0)? cycleCount - _lastPcsInitCount : cycleCount;
+                                if (registry.ProcessCounter >= bundleSize)
+                                {
+                                    //*********************** Start Production Section ***********************//
+                                    // confirmation message if last pcs counter is equal to the nos of initial config.
+                                    if (registry.ProcessCounter >= bundleSize && registry.ProcessStage == "B1")
+                                    {
+                                        registry.WriteRegistry("processStage", "B2");
+                                        registry.WriteRegistry("pedalStatus", "False");
+                                        registry.WriteRegistry("processCounter", bundleSize.ToString());
+
+                                        goto proceed;
+                                    }
+
+                                    // execute additional pcs
+                                    if (registry.TestCounter >= _lastPcsInitCount && registry.ProcessStage == "B3")
+                                    {
+                                        registry.WriteRegistry("processStage", "B3B");
+                                        registry.WriteRegistry("pedalStatus", "False");
+
+                                        goto proceed;
+                                    }
+
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
                                     if (registry.ProcessCounter == bundleSize + _lastPcsInitCount && (registry.ProcessStage == "B6B"))
                                     {
@@ -453,18 +493,18 @@ namespace RenTradeWindowService
                                             goto proceed;
                                         }
                                     }
+                                    //*********************** End Production Section ***********************//
                                 }
-                                //*********************** End Production Section ***********************//
-                            }
-                            else
-                            {
-                                if (registry.ProcessStage == "B1" && registry.ProcessCounter != 0)
+                                else
                                 {
-                                    registry.WriteRegistry("pedalStatus", "True");
-                                    registry.ReadRegistry();
-                                    goto proceed;
+                                    if (registry.ProcessStage == "B1" && registry.ProcessCounter != 0)
+                                    {
+                                        registry.WriteRegistry("pedalStatus", "True");
+                                        registry.ReadRegistry();
+                                        goto proceed;
+                                    }
                                 }
-                            }
+                            }       
                         }
                     }
                 } 
@@ -695,42 +735,115 @@ namespace RenTradeWindowService
                             // validate if test counter is equal to last pcs then exit counter
                             if (registry.ProcessCounter == learjob.BundleSize && registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C3") return false;
 
-                            registry.TestCounter++;
-                            registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
+                            if(_machineType == "RG")
+                            {
+                                registry.TestCounter++;
+                                registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
+                            }
 
                             // in Wire Twist, last piece is part of production qty
-                            if(registry.ProcessStage == "B3" && _machineType == "WT")
+                            if(registry.ProcessStage == "B3")
                             {
-                                registry.ProcessCounter++;
-                                registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                                if (_machineType == "WT")
+                                {
+                                    if(registry.CycleCounter >= this._wireTwistCycleCount - 1) 
+                                    {
+                                        registry.TestCounter++;
+                                        registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
+
+                                        registry.ProcessCounter++;
+                                        registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                                        registry.WriteRegistry("cycleCounter", "0");
+                                    } 
+                                    else
+                                    {
+                                        registry.CycleCounter++;
+                                        registry.WriteRegistry("cycleCounter", registry.CycleCounter.ToString());
+                                    }
+                                }
                             }
                         } else
                         {
                             if (registry.IsProd)
                             {
-                                // confirmation message if last pcs counter is equal to the nos of initial config.
-                                if (registry.ProcessCounter == learjob.BundleSize && (registry.ProcessStage == "B1" || registry.ProcessStage == "B2")) return false;
+                                // execute cycle counter
+                                if (_machineType == "WT")
+                                {
+                                    // check if cycle count hits initial value 
+                                    if (registry.CycleCounter >= this._wireTwistCycleCount - 1 && (registry.ProcessStage == "B1" || registry.ProcessStage == "B2"))
+                                    {
+                                        // confirmation message if last pcs counter is equal to the nos of initial config.
+                                        if (registry.ProcessCounter == learjob.BundleSize) return false;
+                                        else
+                                        {
+                                            registry.ProcessCounter++;
+                                            registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                                            registry.WriteRegistry("cycleCounter", "0");
+
+                                            // if mid pcs is set to 0, do not increment quota counter
+                                            if (_midPcsInitCount != 0)
+                                            {
+                                                registry.QuotaCounter++;
+                                                registry.WriteRegistry("quotaCounter", registry.QuotaCounter.ToString());
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        registry.CycleCounter++;
+                                        registry.WriteRegistry("cycleCounter", registry.CycleCounter.ToString());
+                                    }
+                                } 
                                 else
                                 {
-                                    registry.ProcessCounter++;
-                                    registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
-
-                                    // if mid pcs is set to 0, do not increment quota counter
-                                    if(_midPcsInitCount != 0)
+                                    // confirmation message if last pcs counter is equal to the nos of initial config.
+                                    if (registry.ProcessCounter == learjob.BundleSize && (registry.ProcessStage == "B1" || registry.ProcessStage == "B2")) return false;
+                                    else
                                     {
-                                        registry.QuotaCounter++;
-                                        registry.WriteRegistry("quotaCounter", registry.QuotaCounter.ToString());
+                                        registry.ProcessCounter++;
+                                        registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+
+                                        // if mid pcs is set to 0, do not increment quota counter
+                                        if (_midPcsInitCount != 0)
+                                        {
+                                            registry.QuotaCounter++;
+                                            registry.WriteRegistry("quotaCounter", registry.QuotaCounter.ToString());
+                                        }
                                     }
                                 }
                             }
                             else
                             {
-                                // confirmation message if 1st pcs counter is equal to the nos of initial config.
-                                if (registry.ProcessCounter == this._firstPcsInitCount && registry.ProcessStage == "A1") return false;
+                                // execute cycle counter
+                                if(_machineType == "WT")
+                                {
+                                    // check if cycle count hits initial value 
+                                    if (registry.CycleCounter >= this._wireTwistCycleCount - 1 && registry.ProcessStage == "A1")
+                                    {
+                                        // confirmation message if 1st pcs counter is equal to the nos of initial config.
+                                        if (registry.ProcessCounter == this._firstPcsInitCount) return false;
+                                        else
+                                        {
+                                            registry.ProcessCounter++;
+                                            registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        registry.CycleCounter++;
+                                        registry.WriteRegistry("cycleCounter", registry.CycleCounter.ToString());
+                                    }
+                                } 
                                 else
                                 {
-                                    registry.ProcessCounter++;
-                                    registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                                    // confirmation message if 1st pcs counter is equal to the nos of initial config.
+                                    if (registry.ProcessCounter == this._firstPcsInitCount && registry.ProcessStage == "A1") return false;
+                                    else
+                                    {
+                                        registry.ProcessCounter++;
+                                        registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+                                        registry.WriteRegistry("cycleCounter", "0");
+                                    }
                                 }
                             }
                         }    

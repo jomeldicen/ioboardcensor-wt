@@ -30,6 +30,7 @@ namespace RenTradeWindowService
         public int LastPcsInitCount { get; set; }
         public int QuotaInitCount { get; set; }
         public int WireTwistInitCount { get; set; }
+        public int WireTwistCycleCount { get; set; }
         public string TestJobNos { get; set; }
     }
 }
