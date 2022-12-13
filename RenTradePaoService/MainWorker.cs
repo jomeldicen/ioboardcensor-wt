@@ -628,7 +628,7 @@ namespace RenTradeWindowService
                     if (isLeadSetExist)
                     {
                         // log message queue results
-                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + label + "]");
+                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + label + "] - Ref: " + registry.RefValue);
 
                         registry.TestCounter++;
                         registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
@@ -706,7 +706,7 @@ namespace RenTradeWindowService
             }
 
             // Check Pedal Status set to true
-            if (registry.PedalStatus)
+            if (registry.PedalStatus && !String.IsNullOrEmpty(registry.RefValue))
             {
                 oIOBoard.ioBoard_SetOutput(0, "ON");
 

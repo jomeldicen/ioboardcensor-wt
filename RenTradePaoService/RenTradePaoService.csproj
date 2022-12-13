@@ -17,10 +17,10 @@
 
   <ItemGroup>
     <Reference Include="ioBoardLib">
-      <HintPath>..\..\..\API\RenTrade\ioBoardLib.dll</HintPath>
+      <HintPath>..\..\..\Projects\NET\RenTrade\DLL\ioBoardLib.dll</HintPath>
     </Reference>
     <Reference Include="LearCebuPAO_API">
-      <HintPath>..\..\..\API\RenTrade\LearCebuPAO_API.dll</HintPath>
+      <HintPath>..\..\..\Projects\NET\RenTrade\DLL\LearCebuPAO_API.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

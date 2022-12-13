@@ -148,6 +148,7 @@ namespace RenTradeWindowForm
             lblDailyTarget.Text = learjob.JobQty.ToString();
             lblBatchTarget.Text = learjob.BundleSize.ToString();
             lblMachineName.Text = _machineName;
+            lblRefNos.Text = registry.RefValue;
 
             // Clear and Disable controls if no active job loaded
             if (String.IsNullOrEmpty(learjob.OrderNumber))
@@ -177,6 +178,12 @@ namespace RenTradeWindowForm
                 // means license is valid
                 if(this._isLicense)
                 {
+                    if (String.IsNullOrEmpty(registry.RefValue) && registry.ProcessStage == "A1" && registry.PedalStatus)
+                    {
+                        grpRef.Location = new Point(12, 435);
+                        grpRef.Enabled = true;
+                        goto proceed;
+                    }
 
                     // reel section
                     if (!registry.ReelStatus)
@@ -190,7 +197,7 @@ namespace RenTradeWindowForm
                         lblRemarks.Text = "Reel has been deactivated! For BOM scanning";
 
                         grpInput.Enabled = true;
-                        grpInput.Location = new Point(12, 238);
+                        grpInput.Location = new Point(12, 435);
                         grpInput.Text = "BOM Scanning";
                         lblInputLabel.Text = "Please enter/scan BOM Value";
                         txtInput.Focus();
@@ -241,7 +248,7 @@ namespace RenTradeWindowForm
                                     registry.WriteRegistry("cycleCounter", "0");
                                     registry.WriteRegistry("processStage", "A6B");
 
-                                    grpWireTwist.Location = new Point(12, 238);
+                                    grpWireTwist.Location = new Point(12, 435);
                                     grpWireTwist.Enabled = true;
                                     txtPitchDim.Text = "0";
                                     txtLeftDim.Text = "0";
@@ -266,7 +273,7 @@ namespace RenTradeWindowForm
                         {
                             lblRemarks.Text = "For additional quantity execution";
 
-                            grpInput.Location = new Point(12, 238);
+                            grpInput.Location = new Point(12, 435);
                             lblInputLabel.Text = "Please input additional quantity";
                             grpInput.Text = "Additional Piece";
                             grpInput.Enabled = true;
@@ -376,7 +383,7 @@ namespace RenTradeWindowForm
                             lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
 
                             registry.WriteRegistry("processStage", "A6B");
-                            grpWireTwist.Location = new Point(12, 238);
+                            grpWireTwist.Location = new Point(12, 435);
 
                             goto proceed;
                         } 
@@ -387,7 +394,7 @@ namespace RenTradeWindowForm
                             lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
 
                             grpWireTwist.Enabled = true;
-                            grpWireTwist.Location = new Point(12, 238);
+                            grpWireTwist.Location = new Point(12, 435);
 
                             goto proceed;
                         }
@@ -492,7 +499,7 @@ namespace RenTradeWindowForm
                                     {
                                         registry.WriteRegistry("processStage", "C6B");
 
-                                        grpWireTwist.Location = new Point(12, 238);
+                                        grpWireTwist.Location = new Point(12, 435);
                                         grpWireTwist.Enabled = true;
                                         txtPitchDim.Text = "0";
                                         txtLeftDim.Text = "0";
@@ -521,7 +528,7 @@ namespace RenTradeWindowForm
                                 lblStatus.Text = "Mid Piece";
                                 lblRemarks.Text = "For additional quantity execution";
 
-                                grpInput.Location = new Point(12, 238);
+                                grpInput.Location = new Point(12, 435);
                                 lblInputLabel.Text = "Please input additional quantity";
                                 grpInput.Text = "Additional Piece";
                                 grpInput.Enabled = true;
@@ -630,7 +637,7 @@ namespace RenTradeWindowForm
                                 lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
 
                                 registry.WriteRegistry("processStage", "C6B");
-                                grpWireTwist.Location = new Point(12, 238);
+                                grpWireTwist.Location = new Point(12, 435);
 
                                 goto proceed;
                             }
@@ -642,7 +649,7 @@ namespace RenTradeWindowForm
                                 lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
 
                                 grpWireTwist.Enabled = true;
-                                grpWireTwist.Location = new Point(12, 238);
+                                grpWireTwist.Location = new Point(12, 435);
 
                                 goto proceed;
                             }
@@ -763,7 +770,7 @@ namespace RenTradeWindowForm
                             lblRemarks.Text = "For additional quantity execution";
 
                             grpInput.Enabled = true;
-                            grpInput.Location = new Point(12, 238);
+                            grpInput.Location = new Point(12, 435);
                             lblInputLabel.Text = "Please input additional quantity";
                             txtInput.Focus();
 
@@ -854,7 +861,7 @@ namespace RenTradeWindowForm
                             lblStatus.Text = "Production";
                             lblRemarks.Text = "For additional quantity execution";
 
-                            grpInput.Location = new Point(12, 238);
+                            grpInput.Location = new Point(12, 435);
                             lblInputLabel.Text = "Please input additional quantity";
                             grpInput.Text = "Additional Piece";
                             grpInput.Enabled = true;
@@ -964,7 +971,7 @@ namespace RenTradeWindowForm
                             lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
 
                             registry.WriteRegistry("processStage", "B6B");
-                            grpWireTwist.Location = new Point(12, 238);
+                            grpWireTwist.Location = new Point(12, 435);
 
                             goto proceed;
                         }
@@ -976,7 +983,7 @@ namespace RenTradeWindowForm
                             lblRemarks.Text = "For WIRE TWIST input: " + registry.TestCounter.ToString() + " out of " + _wireTwistInitCount.ToString();
 
                             grpWireTwist.Enabled = true;
-                            grpWireTwist.Location = new Point(12, 238);
+                            grpWireTwist.Location = new Point(12, 435);
 
                             goto proceed;
                         }
@@ -1234,26 +1241,28 @@ namespace RenTradeWindowForm
         }
 
         private void resetGroupInput()
-        {
+        {   
             // Wire Twist Group
             lblWTRemarks.Text = "";
-            grpWireTwist.Location = new Point(330, 279);
-            //txtPitchDim.Text = "0";
-            //txtLeftDim.Text = "0";
-            //txtRightDim.Text = "0";
+            grpWireTwist.Location = new Point(330, 305);
 
             // Input Group
             lblInputRemarks.Text = "";
-            grpInput.Location = new Point(330, 136);
+            grpInput.Location = new Point(330, 160);
             lblInputLabel.Text = "Please input additional quantity";
             grpInput.Text = "Additional Piece";
-            //txtInput.Text = "0";
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            grpRef.Location = new Point(12, 435);
+            grpRef.Enabled = true;
+
+            // Reference Group
+            lblRefRemarks.Text = "";
             grpInput.Enabled = false;
             grpWireTwist.Enabled = false;
+
             resetGroupInput();
 
             btnStart.Enabled = false;
@@ -1264,12 +1273,6 @@ namespace RenTradeWindowForm
             ptStripMenuItem.Enabled = false;
             cmStripMenuItem.Enabled = false;
             registry.WriteRegistry("pedalStatus", "True");
-
-            //if(this._machineType == "WT")
-            //{
-            //    registry.WriteRegistry("processStage", "B1");
-            //    registry.WriteRegistry("isProd", "True");
-            //}
         }
 
         private void btnTerminate_Click(object sender, EventArgs e)
@@ -1288,6 +1291,12 @@ namespace RenTradeWindowForm
 
                 btnStart.Enabled = true;
                 btnTerminate.Enabled = false;
+
+                // Reference Group
+                lblRefRemarks.Text = "";
+                txtRef.Text = "";
+                grpRef.Location = new Point(330, 15);
+                grpRef.Enabled = false;
 
                 registry.WriteRegistry("processStage", "F2");
             } 
@@ -1329,7 +1338,7 @@ namespace RenTradeWindowForm
                 }
 
                 // log results
-                registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input);
+                registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input + " - Ref: " + registry.RefValue);
             }
             else
             {
@@ -1771,12 +1780,10 @@ namespace RenTradeWindowForm
                         registry.WriteRegistry("testCounter", counter1.ToString());
 
                         // log results
-                        //grpWireTwist.Enabled = false; 
                         txtPitchDim.Text = "0";
                         txtLeftDim.Text = "0";
                         txtRightDim.Text = "0";
-                        //resetGroupInput();
-                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + p + ":::" + l + ":::" + r + ":::" + learjob.OrderNumber + ":::" + learjob.LeadSet + "]");
+                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + p + ":::" + l + ":::" + r + ":::" + learjob.OrderNumber + ":::" + learjob.LeadSet + "] - Ref: " + registry.RefValue);
                     }
                     else
                     {
@@ -1814,6 +1821,37 @@ namespace RenTradeWindowForm
             {
                 btnWireTwist_Click(this, new EventArgs());
             }
+        }
+
+        private void btnRefOk_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(this, "You are entering: " + txtRef.Text + ". Do you want to proceed?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (result == DialogResult.Yes)
+            {
+                registry.WriteRegistry("refValue", txtRef.Text);
+                registry.WriteRegistry("refOldValue", txtRef.Text);
+                lblRefRemarks.Text = "";
+                txtRef.Text = "";
+                grpRef.Location = new Point(330, 15);
+            }
+            else
+            {
+                // Reference Group
+                lblRefRemarks.Text = "";
+                txtRef.Text = "";
+                grpRef.Location = new Point(330, 15);
+                registry.WriteRegistry("pedalStatus", "False");
+            }
+        }
+
+        private void btnRefCancel_Click(object sender, EventArgs e)
+        { 
+            // Reference Group
+            lblRefRemarks.Text = "";
+            txtRef.Text = "";
+            grpRef.Location = new Point(330, 15);
+            registry.WriteRegistry("pedalStatus", "False");
+            registry.WriteRegistry("processStage", "A1");
         }
     }
 }

@@ -62,6 +62,15 @@ namespace RenTradeWindowForm
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lblQuota = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblRefNos = new System.Windows.Forms.Label();
+            this.grpRef = new System.Windows.Forms.GroupBox();
+            this.btnRefCancel = new System.Windows.Forms.Button();
+            this.txtRef = new System.Windows.Forms.TextBox();
+            this.btnRefOk = new System.Windows.Forms.Button();
+            this.lblRefRemarks = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.grpInput = new System.Windows.Forms.GroupBox();
             this.txtInput = new System.Windows.Forms.TextBox();
             this.btnOk = new System.Windows.Forms.Button();
@@ -87,6 +96,8 @@ namespace RenTradeWindowForm
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.grpRef.SuspendLayout();
             this.grpInput.SuspendLayout();
             this.grpWireTwist.SuspendLayout();
             this.SuspendLayout();
@@ -106,7 +117,7 @@ namespace RenTradeWindowForm
             this.helpStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(312, 24);
+            this.menuStrip.Size = new System.Drawing.Size(309, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -201,10 +212,10 @@ namespace RenTradeWindowForm
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsStatusLabel,
             this.tsDateTimeLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 501);
+            this.statusStrip.Location = new System.Drawing.Point(0, 649);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.statusStrip.Size = new System.Drawing.Size(312, 22);
+            this.statusStrip.Size = new System.Drawing.Size(309, 22);
             this.statusStrip.TabIndex = 4;
             this.statusStrip.Text = "statusStrip";
             // 
@@ -221,7 +232,7 @@ namespace RenTradeWindowForm
             // 
             this.tsDateTimeLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tsDateTimeLabel.Name = "tsDateTimeLabel";
-            this.tsDateTimeLabel.Size = new System.Drawing.Size(281, 17);
+            this.tsDateTimeLabel.Size = new System.Drawing.Size(278, 17);
             this.tsDateTimeLabel.Spring = true;
             this.tsDateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.tsDateTimeLabel.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -268,7 +279,7 @@ namespace RenTradeWindowForm
             this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label7.Location = new System.Drawing.Point(135, 44);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(70, 13);
+            this.label7.Size = new System.Drawing.Size(69, 13);
             this.label7.TabIndex = 5;
             this.label7.Text = "Bundle Size:";
             // 
@@ -324,7 +335,7 @@ namespace RenTradeWindowForm
             // 
             this.groupBox2.Controls.Add(this.lblRemarks);
             this.groupBox2.Controls.Add(this.lblStatus);
-            this.groupBox2.Location = new System.Drawing.Point(12, 136);
+            this.groupBox2.Location = new System.Drawing.Point(12, 182);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(276, 96);
             this.groupBox2.TabIndex = 7;
@@ -354,7 +365,7 @@ namespace RenTradeWindowForm
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.lblCounter);
-            this.groupBox3.Location = new System.Drawing.Point(12, 238);
+            this.groupBox3.Location = new System.Drawing.Point(12, 287);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(134, 66);
             this.groupBox3.TabIndex = 8;
@@ -374,7 +385,7 @@ namespace RenTradeWindowForm
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.lblQuota);
-            this.groupBox4.Location = new System.Drawing.Point(154, 238);
+            this.groupBox4.Location = new System.Drawing.Point(154, 287);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(134, 66);
             this.groupBox4.TabIndex = 9;
@@ -394,6 +405,8 @@ namespace RenTradeWindowForm
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panel1.Controls.Add(this.groupBox5);
+            this.panel1.Controls.Add(this.grpRef);
             this.panel1.Controls.Add(this.grpInput);
             this.panel1.Controls.Add(this.grpWireTwist);
             this.panel1.Controls.Add(this.btnTerminate);
@@ -407,8 +420,110 @@ namespace RenTradeWindowForm
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 24);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(312, 477);
+            this.panel1.Size = new System.Drawing.Size(309, 625);
             this.panel1.TabIndex = 5;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.lblRefNos);
+            this.groupBox5.Location = new System.Drawing.Point(12, 132);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(276, 45);
+            this.groupBox5.TabIndex = 20;
+            this.groupBox5.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label4.Location = new System.Drawing.Point(6, 19);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(84, 13);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "Reference Nos:";
+            // 
+            // lblRefNos
+            // 
+            this.lblRefNos.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblRefNos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.lblRefNos.Location = new System.Drawing.Point(96, 19);
+            this.lblRefNos.Name = "lblRefNos";
+            this.lblRefNos.Size = new System.Drawing.Size(171, 13);
+            this.lblRefNos.TabIndex = 19;
+            this.lblRefNos.Text = "n/a";
+            // 
+            // grpRef
+            // 
+            this.grpRef.BackColor = System.Drawing.SystemColors.Control;
+            this.grpRef.Controls.Add(this.btnRefCancel);
+            this.grpRef.Controls.Add(this.txtRef);
+            this.grpRef.Controls.Add(this.btnRefOk);
+            this.grpRef.Controls.Add(this.lblRefRemarks);
+            this.grpRef.Controls.Add(this.label11);
+            this.grpRef.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.grpRef.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.grpRef.Location = new System.Drawing.Point(330, 15);
+            this.grpRef.Name = "grpRef";
+            this.grpRef.Size = new System.Drawing.Size(276, 137);
+            this.grpRef.TabIndex = 17;
+            this.grpRef.TabStop = false;
+            this.grpRef.Text = "Reference Nos.";
+            // 
+            // btnRefCancel
+            // 
+            this.btnRefCancel.BackColor = System.Drawing.SystemColors.Control;
+            this.btnRefCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnRefCancel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnRefCancel.ForeColor = System.Drawing.Color.Black;
+            this.btnRefCancel.Location = new System.Drawing.Point(222, 54);
+            this.btnRefCancel.Name = "btnRefCancel";
+            this.btnRefCancel.Size = new System.Drawing.Size(44, 29);
+            this.btnRefCancel.TabIndex = 5;
+            this.btnRefCancel.Text = "Cancel";
+            this.btnRefCancel.UseVisualStyleBackColor = false;
+            this.btnRefCancel.Click += new System.EventHandler(this.btnRefCancel_Click);
+            // 
+            // txtRef
+            // 
+            this.txtRef.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtRef.Location = new System.Drawing.Point(6, 54);
+            this.txtRef.Name = "txtRef";
+            this.txtRef.Size = new System.Drawing.Size(162, 29);
+            this.txtRef.TabIndex = 3;
+            // 
+            // btnRefOk
+            // 
+            this.btnRefOk.BackColor = System.Drawing.SystemColors.Control;
+            this.btnRefOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnRefOk.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnRefOk.ForeColor = System.Drawing.Color.Black;
+            this.btnRefOk.Location = new System.Drawing.Point(174, 54);
+            this.btnRefOk.Name = "btnRefOk";
+            this.btnRefOk.Size = new System.Drawing.Size(44, 29);
+            this.btnRefOk.TabIndex = 4;
+            this.btnRefOk.Text = "OK";
+            this.btnRefOk.UseVisualStyleBackColor = false;
+            this.btnRefOk.Click += new System.EventHandler(this.btnRefOk_Click);
+            // 
+            // lblRefRemarks
+            // 
+            this.lblRefRemarks.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblRefRemarks.Location = new System.Drawing.Point(4, 86);
+            this.lblRefRemarks.Name = "lblRefRemarks";
+            this.lblRefRemarks.Size = new System.Drawing.Size(260, 24);
+            this.lblRefRemarks.TabIndex = 11;
+            this.lblRefRemarks.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label11.Location = new System.Drawing.Point(6, 38);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(154, 13);
+            this.label11.TabIndex = 14;
+            this.label11.Text = "Please input Reference value";
             // 
             // grpInput
             // 
@@ -419,7 +534,7 @@ namespace RenTradeWindowForm
             this.grpInput.Controls.Add(this.lblInputLabel);
             this.grpInput.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.grpInput.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.grpInput.Location = new System.Drawing.Point(330, 136);
+            this.grpInput.Location = new System.Drawing.Point(330, 160);
             this.grpInput.Name = "grpInput";
             this.grpInput.Size = new System.Drawing.Size(276, 137);
             this.grpInput.TabIndex = 14;
@@ -432,7 +547,7 @@ namespace RenTradeWindowForm
             this.txtInput.Location = new System.Drawing.Point(6, 54);
             this.txtInput.Name = "txtInput";
             this.txtInput.Size = new System.Drawing.Size(210, 29);
-            this.txtInput.TabIndex = 16;
+            this.txtInput.TabIndex = 6;
             this.txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtInput_KeyDown);
             // 
             // btnOk
@@ -444,8 +559,8 @@ namespace RenTradeWindowForm
             this.btnOk.Location = new System.Drawing.Point(222, 54);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(44, 29);
-            this.btnOk.TabIndex = 13;
-            this.btnOk.Text = "OK";
+            this.btnOk.TabIndex = 7;
+            this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             // 
@@ -482,7 +597,7 @@ namespace RenTradeWindowForm
             this.grpWireTwist.Enabled = false;
             this.grpWireTwist.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.grpWireTwist.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.grpWireTwist.Location = new System.Drawing.Point(330, 279);
+            this.grpWireTwist.Location = new System.Drawing.Point(330, 305);
             this.grpWireTwist.Name = "grpWireTwist";
             this.grpWireTwist.Size = new System.Drawing.Size(276, 137);
             this.grpWireTwist.TabIndex = 15;
@@ -495,7 +610,7 @@ namespace RenTradeWindowForm
             this.txtRightDim.Location = new System.Drawing.Point(148, 52);
             this.txtRightDim.Name = "txtRightDim";
             this.txtRightDim.Size = new System.Drawing.Size(65, 29);
-            this.txtRightDim.TabIndex = 20;
+            this.txtRightDim.TabIndex = 10;
             this.txtRightDim.Text = "0";
             this.txtRightDim.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtRightDim_KeyDown);
             // 
@@ -505,7 +620,7 @@ namespace RenTradeWindowForm
             this.txtLeftDim.Location = new System.Drawing.Point(77, 52);
             this.txtLeftDim.Name = "txtLeftDim";
             this.txtLeftDim.Size = new System.Drawing.Size(65, 29);
-            this.txtLeftDim.TabIndex = 18;
+            this.txtLeftDim.TabIndex = 9;
             this.txtLeftDim.Text = "0";
             this.txtLeftDim.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtLeftDim_KeyDown);
             // 
@@ -515,7 +630,7 @@ namespace RenTradeWindowForm
             this.txtPitchDim.Location = new System.Drawing.Point(6, 52);
             this.txtPitchDim.Name = "txtPitchDim";
             this.txtPitchDim.Size = new System.Drawing.Size(65, 29);
-            this.txtPitchDim.TabIndex = 16;
+            this.txtPitchDim.TabIndex = 8;
             this.txtPitchDim.Text = "0";
             this.txtPitchDim.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPitchDim_KeyDown);
             // 
@@ -548,8 +663,8 @@ namespace RenTradeWindowForm
             this.btnWireTwist.Location = new System.Drawing.Point(222, 52);
             this.btnWireTwist.Name = "btnWireTwist";
             this.btnWireTwist.Size = new System.Drawing.Size(44, 29);
-            this.btnWireTwist.TabIndex = 13;
-            this.btnWireTwist.Text = "OK";
+            this.btnWireTwist.TabIndex = 11;
+            this.btnWireTwist.Text = "Ok";
             this.btnWireTwist.UseVisualStyleBackColor = false;
             this.btnWireTwist.Click += new System.EventHandler(this.btnWireTwist_Click);
             // 
@@ -579,10 +694,10 @@ namespace RenTradeWindowForm
             this.btnTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnTerminate.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnTerminate.ForeColor = System.Drawing.Color.Black;
-            this.btnTerminate.Location = new System.Drawing.Point(154, 323);
+            this.btnTerminate.Location = new System.Drawing.Point(154, 372);
             this.btnTerminate.Name = "btnTerminate";
             this.btnTerminate.Size = new System.Drawing.Size(134, 48);
-            this.btnTerminate.TabIndex = 12;
+            this.btnTerminate.TabIndex = 2;
             this.btnTerminate.Text = "Terminate";
             this.btnTerminate.UseVisualStyleBackColor = false;
             this.btnTerminate.Click += new System.EventHandler(this.btnTerminate_Click);
@@ -594,7 +709,7 @@ namespace RenTradeWindowForm
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnStart.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnStart.ForeColor = System.Drawing.Color.Black;
-            this.btnStart.Location = new System.Drawing.Point(12, 323);
+            this.btnStart.Location = new System.Drawing.Point(12, 372);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(134, 48);
             this.btnStart.TabIndex = 1;
@@ -628,7 +743,7 @@ namespace RenTradeWindowForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(312, 523);
+            this.ClientSize = new System.Drawing.Size(309, 671);
             this.ControlBox = false;
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip);
@@ -652,6 +767,10 @@ namespace RenTradeWindowForm
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.grpRef.ResumeLayout(false);
+            this.grpRef.PerformLayout();
             this.grpInput.ResumeLayout(false);
             this.grpInput.PerformLayout();
             this.grpWireTwist.ResumeLayout(false);
@@ -715,6 +834,15 @@ namespace RenTradeWindowForm
         private System.Windows.Forms.TextBox txtLeftDim;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.GroupBox grpRef;
+        private System.Windows.Forms.TextBox txtRef;
+        private System.Windows.Forms.Button btnRefOk;
+        private System.Windows.Forms.Label lblRefRemarks;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblRefNos;
+        private System.Windows.Forms.Button btnRefCancel;
     }
 }
 
