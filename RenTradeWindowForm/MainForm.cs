@@ -91,8 +91,6 @@ namespace RenTradeWindowForm
                     return;
                 }
             }
-            //this.TopMost = true;
-            //this.TopLevel = true;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -102,6 +100,11 @@ namespace RenTradeWindowForm
             groupBox3.Visible = (_machineType == "RG") ? true : false;
             groupBox4.Visible = (_machineType == "RG") ? true : false;
             lblRemarks.Visible = (_machineType == "RG") ? true : false;
+
+
+            this.TopMost = true;
+            this.TopLevel = true;
+
             backgroundWorker.RunWorkerAsync();
         }
 
@@ -1046,26 +1049,26 @@ namespace RenTradeWindowForm
             } 
             else
             {
-                switch (registry.IOBoardStatus)
-                {
-                    case "X1":
-                        MessageBox.Show(this, "IO Device is not properly set", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    case "X2":
-                        MessageBox.Show(this, "Com Port is not properly set", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    case "X3":
-                        MessageBox.Show(this, "IO Device error upon Initialize", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    case "X4":
-                        MessageBox.Show(this, "IO Device port is closed", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    case "X5":
-                        MessageBox.Show(this, "IO Device error upon Closing", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    default:
-                        break;
-                }
+                //switch (registry.IOBoardStatus)
+                //{
+                //    case "X1":
+                //        MessageBox.Show(this, "IO Device is not properly set", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        break;
+                //    case "X2":
+                //        MessageBox.Show(this, "Com Port is not properly set", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        break;
+                //    case "X3":
+                //        MessageBox.Show(this, "IO Device error upon Initialize", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        break;
+                //    case "X4":
+                //        MessageBox.Show(this, "IO Device port is closed", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        break;
+                //    case "X5":
+                //        MessageBox.Show(this, "IO Device error upon Closing", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        break;
+                //    default:
+                //        break;
+                //}
 
                 btnStart.Enabled = false;
                 btnTerminate.Enabled = false;
@@ -1225,6 +1228,7 @@ namespace RenTradeWindowForm
                 tsStatusLabel.Image = (Image)(Resources.ResourceManager.GetObject("red"));
             }
 
+            lblRefCount.Text = registry.RefCounter.ToString();
             lblCounter.Text = (registry.IsProd) ? registry.ProcessCounter.ToString() : "0";
             if (_machineType == "RG")
                 lblQuota.Text = (_midPcsInitCount != 0) ? registry.QuotaCounter.ToString() : "N/A";
@@ -1388,14 +1392,6 @@ namespace RenTradeWindowForm
 
                             var counter1 = registry.ProcessCounter - value;
                             registry.WriteRegistry("processCounter", counter1.ToString());
-
-                            //if (value >= registry.TestCounter)
-                            //    registry.WriteRegistry("testCounter", "0");
-                            //else
-                            //{
-                            //    counter1 = registry.TestCounter - value;
-                            //    registry.WriteRegistry("testCounter", counter1.ToString());
-                            //}
 
                             registry.WriteRegistry("testCounter", "0");
                             // activate pedal to continue
@@ -1829,7 +1825,6 @@ namespace RenTradeWindowForm
             if (result == DialogResult.Yes)
             {
                 registry.WriteRegistry("refValue", txtRef.Text);
-                registry.WriteRegistry("refOldValue", txtRef.Text);
                 lblRefRemarks.Text = "";
                 txtRef.Text = "";
                 grpRef.Location = new Point(330, 15);

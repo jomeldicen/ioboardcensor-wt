@@ -89,6 +89,8 @@ namespace RenTradeWindowForm
             this.btnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblMachineName = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.lblRefCount = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -425,6 +427,8 @@ namespace RenTradeWindowForm
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.lblRefCount);
+            this.groupBox5.Controls.Add(this.label10);
             this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.lblRefNos);
             this.groupBox5.Location = new System.Drawing.Point(12, 132);
@@ -439,17 +443,17 @@ namespace RenTradeWindowForm
             this.label4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label4.Location = new System.Drawing.Point(6, 19);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(84, 13);
+            this.label4.Size = new System.Drawing.Size(50, 13);
             this.label4.TabIndex = 18;
-            this.label4.Text = "Reference Nos:";
+            this.label4.Text = "Ref Nos:";
             // 
             // lblRefNos
             // 
             this.lblRefNos.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblRefNos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.lblRefNos.Location = new System.Drawing.Point(96, 19);
+            this.lblRefNos.Location = new System.Drawing.Point(68, 19);
             this.lblRefNos.Name = "lblRefNos";
-            this.lblRefNos.Size = new System.Drawing.Size(171, 13);
+            this.lblRefNos.Size = new System.Drawing.Size(95, 13);
             this.lblRefNos.TabIndex = 19;
             this.lblRefNos.Text = "n/a";
             // 
@@ -739,6 +743,25 @@ namespace RenTradeWindowForm
             this.lblMachineName.Text = "XXX-00-0000";
             this.lblMachineName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label10.Location = new System.Drawing.Point(147, 19);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(62, 13);
+            this.label10.TabIndex = 20;
+            this.label10.Text = "Ref Count:";
+            // 
+            // lblRefCount
+            // 
+            this.lblRefCount.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblRefCount.Location = new System.Drawing.Point(219, 19);
+            this.lblRefCount.Name = "lblRefCount";
+            this.lblRefCount.Size = new System.Drawing.Size(50, 13);
+            this.lblRefCount.TabIndex = 21;
+            this.lblRefCount.Text = "0";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -843,6 +866,8 @@ namespace RenTradeWindowForm
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblRefNos;
         private System.Windows.Forms.Button btnRefCancel;
+        private System.Windows.Forms.Label lblRefCount;
+        private System.Windows.Forms.Label label10;
     }
 }
 

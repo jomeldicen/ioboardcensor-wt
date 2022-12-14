@@ -67,6 +67,17 @@ namespace RenTradeWindowService
                             registry.ReadRegistry();
                         }
                     }
+
+                    // if current reference serial nos is different on old serial
+                    registry.ReadRegistry();
+                    if (!String.IsNullOrWhiteSpace(registry.RefOldValue))
+                    {
+                        if (!OrderNumber.Equals(registry.RefOldValue) && (registry.ProcessStage == "B8" || registry.ProcessStage == "F1"))
+                        {
+                            registry.WriteRegistry("refCounter", "0");
+                            registry.ReadRegistry();
+                        }
+                    }
                 } 
                 else if (JobInfo == "ErrorDB")
                 {
@@ -125,7 +136,9 @@ namespace RenTradeWindowService
 
             if (isPaoJobFinished)
             {
+                registry.ReadRegistry();
                 registry.WriteRegistry("oldOrderNos", OrderNumber);
+                registry.WriteRegistry("refOldValue", registry.RefValue.ToString());
                 registry.ResetRegistry();
             }
         }

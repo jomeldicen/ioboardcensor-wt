@@ -31,6 +31,7 @@ namespace RenTradeWindowService
         public string JobInfo { get; private set; }
         public string RefValue { get; private set; }
         public string RefOldValue { get; private set; }
+        public int RefCounter { get; set; }
 
         private readonly string _logPath;
 

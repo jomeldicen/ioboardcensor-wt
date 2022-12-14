@@ -692,8 +692,12 @@ namespace RenTradeWindowService
             // Input 0 - Pedal Indicator
             // Input 1&2 - Reel Indicator
 
-            //if (registry.ReelStatus)
-            //    oIOBoard.ioBoard_SetOutput(0, "ON");
+            //if(registry.IOBoardStatus != "X0")
+            //{
+            //    oIOBoard.ioBoard_SetOutput(0, "OFF");
+            //    return false;
+            //}
+           
 
             // reel section
             if (!ReadIOStatus("I", 1) || !ReadIOStatus("I", 2))
@@ -780,6 +784,10 @@ namespace RenTradeWindowService
                                             registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
                                             registry.WriteRegistry("cycleCounter", "0");
 
+                                            // accumulate RefCounter if same serial
+                                            registry.RefCounter++;
+                                            registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+
                                             // if mid pcs is set to 0, do not increment quota counter
                                             if (_midPcsInitCount != 0)
                                             {
@@ -802,6 +810,10 @@ namespace RenTradeWindowService
                                     {
                                         registry.ProcessCounter++;
                                         registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+
+                                        // accumulate RefCounter if same serial
+                                        registry.RefCounter++;
+                                        registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
 
                                         // if mid pcs is set to 0, do not increment quota counter
                                         if (_midPcsInitCount != 0)
@@ -826,6 +838,10 @@ namespace RenTradeWindowService
                                         {
                                             registry.ProcessCounter++;
                                             registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+
+                                            // accumulate RefCounter if same serial
+                                            registry.RefCounter++;
+                                            registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
                                         }
                                     }
                                     else
@@ -842,6 +858,11 @@ namespace RenTradeWindowService
                                     {
                                         registry.ProcessCounter++;
                                         registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
+
+                                        // accumulate RefCounter if same serial
+                                        registry.RefCounter++;
+                                        registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+
                                         registry.WriteRegistry("cycleCounter", "0");
                                     }
                                 }
