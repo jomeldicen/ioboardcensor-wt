@@ -12,10 +12,10 @@
 
   <ItemGroup>
     <Reference Include="LearCebuPAO_API">
-      <HintPath>..\..\..\API\RenTrade\LearCebuPAO_API.dll</HintPath>
+      <HintPath>..\..\..\Projects\NET\RenTrade\DLL\LearCebuPAO_API.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
-      <HintPath>bin\Debug\netcoreapp3.1\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\Projects\NET\RenTrade\DLL\MySql.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

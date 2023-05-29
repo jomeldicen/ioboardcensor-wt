@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {}
+    "D:\\Development\\Github\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {}
   },
   "projects": {
-    "E:\\Development\\GitHub\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj": {
+    "D:\\Development\\Github\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Development\\GitHub\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj",
+        "projectUniqueName": "D:\\Development\\Github\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj",
         "projectName": "RenTradePaoService",
-        "projectPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj",
+        "projectPath": "D:\\Development\\Github\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj",
         "packagesPath": "C:\\Users\\jpdicen\\.nuget\\packages\\",
-        "outputPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradePaoService\\obj\\",
+        "outputPath": "D:\\Development\\Github\\ioboardcensor\\RenTradePaoService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
@@ -86,15 +86,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[3.1.27, 3.1.27]"
+              "version": "[3.1.31, 3.1.31]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[3.1.27, 3.1.27]"
+              "version": "[3.1.31, 3.1.31]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[3.1.27, 3.1.27]"
+              "version": "[3.1.31, 3.1.31]"
             }
           ],
           "frameworkReferences": {
@@ -102,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.414\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
@@ -111,14 +111,14 @@
         }
       }
     },
-    "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {
+    "D:\\Development\\Github\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+        "projectUniqueName": "D:\\Development\\Github\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
         "projectName": "RenTradeWindowForm",
-        "projectPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
+        "projectPath": "D:\\Development\\Github\\ioboardcensor\\RenTradeWindowForm\\RenTradeWindowForm.csproj",
         "packagesPath": "C:\\Users\\jpdicen\\.nuget\\packages\\",
-        "outputPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradeWindowForm\\obj\\publish\\win-x64\\",
+        "outputPath": "D:\\Development\\Github\\ioboardcensor\\RenTradeWindowForm\\obj\\publish\\win-x64\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
@@ -139,8 +139,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "E:\\Development\\GitHub\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj": {
-                "projectPath": "E:\\Development\\GitHub\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj"
+              "D:\\Development\\Github\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj": {
+                "projectPath": "D:\\Development\\Github\\ioboardcensor\\RenTradePaoService\\RenTradePaoService.csproj"
               }
             }
           }
@@ -185,15 +185,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[3.1.27, 3.1.27]"
+              "version": "[3.1.31, 3.1.31]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[3.1.27, 3.1.27]"
+              "version": "[3.1.31, 3.1.31]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[3.1.27, 3.1.27]"
+              "version": "[3.1.31, 3.1.31]"
             }
           ],
           "frameworkReferences": {
@@ -204,7 +204,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.414\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
