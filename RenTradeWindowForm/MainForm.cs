@@ -11,6 +11,7 @@ using RenTradeWindowForm.Properties;
 using System.Linq;
 using FoxLearn.License;
 using Microsoft.VisualBasic;
+using System.Security.Cryptography;
 
 namespace RenTradeWindowForm
 {
@@ -30,10 +31,17 @@ namespace RenTradeWindowForm
         private readonly string _endJobMsg;
 
         private readonly int _firstPcsInitCount;
+        private readonly int _firstPcsInitCount1;
+        private readonly int _firstPcsInitCount2;
         private readonly int _midPcsInitCount;
+        private readonly int _midPcsInitCount1;
+        private readonly int _midPcsInitCount2;
         private readonly int _lastPcsInitCount;
+        private readonly int _lastPcsInitCount1;
+        private readonly int _lastPcsInitCount2;
         private readonly int _quotaInitCount;
         private readonly int _wireTwistInitCount;
+        private readonly string _adminKey;
 
         private readonly bool _isLicense = false;
 
@@ -44,6 +52,11 @@ namespace RenTradeWindowForm
         public MainForm(IOptions<ServiceConfiguration> options)
         {
             InitializeComponent();
+
+            //add this:
+            this.ShowInTaskbar = false;
+            this.ControlBox = false;
+            this.Text = null;
 
             _options = options;
 
@@ -76,10 +89,17 @@ namespace RenTradeWindowForm
 
             // Count for Pull Test and Caliper
             _firstPcsInitCount = _options.Value.FirstPcsInitCount;
+            _firstPcsInitCount1 = _options.Value.FirstPcsInitCount1;
+            _firstPcsInitCount2 = _options.Value.FirstPcsInitCount2;
             _midPcsInitCount = _options.Value.MidPcsInitCount;
+            _midPcsInitCount1 = _options.Value.MidPcsInitCount1;
+            _midPcsInitCount2 = _options.Value.MidPcsInitCount2;
             _lastPcsInitCount = _options.Value.LastPcsInitCount;
+            _lastPcsInitCount1 = _options.Value.LastPcsInitCount1;
+            _lastPcsInitCount2 = _options.Value.LastPcsInitCount2;
             _quotaInitCount = _options.Value.QuotaInitCount;
             _wireTwistInitCount = _options.Value.WireTwistInitCount;
+            _adminKey = _options.Value.AdminKey;
 
             // Windows Form Start Position
             this.StartPosition = FormStartPosition.Manual;
@@ -100,7 +120,6 @@ namespace RenTradeWindowForm
             groupBox3.Visible = (_machineType == "RG") ? true : false;
             groupBox4.Visible = (_machineType == "RG") ? true : false;
             lblRemarks.Visible = (_machineType == "RG") ? true : false;
-
 
             this.TopMost = true;
             this.TopLevel = true;
@@ -209,6 +228,148 @@ namespace RenTradeWindowForm
                     }
                     //groupBox3.Text = (_machineType == "RG") ? "Counter" : "Cycle Count";
 
+                    // check serial status
+                    if (registry.RefStatus == "JP000") 
+                    { 
+                        lblRemarks.Text = "Serial Count exceed Final Limit. ";
+                        registry.WriteRegistry("pedalStatus", "False");
+
+                        DialogResult result = MessageBox.Show(this, "Serial Count exceed Final Limit. Do you want to proceed?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                        if (result == DialogResult.Yes)
+                        {
+                            registry.WriteRegistry("refStatus", "JP001");
+                            // Reference Group
+                            lblRefRemarks.Text = "";
+                            txtRef.Text = "";
+                            grpRef.Location = new Point(12, 435);
+                            grpRef.Enabled = true;
+                        }
+                        else
+                        {
+                            // Reference Group
+                            lblRefRemarks.Text = "";
+                            txtRef.Text = "";
+                            grpRef.Location = new Point(330, 15);
+                            grpRef.Enabled = true;
+
+                            resetGroupInput();
+
+                            registry.WriteRegistry("processStage", "F2");
+                            registry.WriteRegistry("refStatus", "JP002");
+
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = false;
+                            ptStripMenuItem.Enabled = false;
+                            cmStripMenuItem.Enabled = false;
+
+                            btnStart.Enabled = false;
+                            btnTerminate.Enabled = true;
+                        }
+
+                        goto proceed;
+                    }
+
+                    // Serial Count exceed Initial Limit
+                    if (registry.RefStatus == "JO000")
+                    {
+                        lblRemarks.Text = "Serial Count exceed Initial Limit";
+                        registry.WriteRegistry("pedalStatus", "False");
+
+                        DialogResult result = MessageBox.Show(this, "Serial Count exceed Initial Limit. Do you want to proceed?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                        if (result == DialogResult.Yes)
+                        {
+                            registry.WriteRegistry("refStatus", "JO001");
+                            txtSerialConfirmation.Text = "";
+                            grpSerialValidation.Text = "Serial Validation";
+                            grpSerialValidation.Location = new Point(12, 435);
+                            grpSerialValidation.Enabled = true;
+                        }
+                        else
+                        {
+                            registry.WriteRegistry("refStatus", "JO002");
+                            // Reference Group
+                            lblRefRemarks.Text = "";
+                            txtRef.Text = "";
+                            grpRef.Location = new Point(12, 435);
+                            grpRef.Enabled = true;
+
+                            //// Reference Group
+                            //lblRefRemarks.Text = "";
+                            //txtRef.Text = "";
+                            //grpRef.Location = new Point(12, 435);
+                            //grpRef.Enabled = true;
+
+                            //resetGroupInput();
+
+                            //stStripMenuItem.Enabled = false;
+                            //tmStripMenuItem.Enabled = false;
+                            //ptStripMenuItem.Enabled = false;
+                            //cmStripMenuItem.Enabled = false;
+
+                            //btnStart.Enabled = false;
+                            //btnTerminate.Enabled = true;
+
+                            //// overwrite node 
+                            //registry.XmlSerialLogger(registry.RefValue, "Status", "Not OK");
+                            //registry.WriteRegistry("processStage", "F2");
+                            //registry.WriteRegistry("refStatus", "JO002");
+                            //registry.WriteRegistry("pedalStatus", "False");
+
+                            //// Serial Group
+                            //lblSerialRemarks.Text = "";
+                            //txtSerialConfirmation.Text = "";
+                            //grpSerialValidation.Location = new Point(330, 448);
+                            //grpSerialValidation.Enabled = false;
+                        }
+                        goto proceed;
+                    }
+
+                    string[] serialArray = { "JO001", "JO002", "JP001", "JP002" };
+                    if (serialArray.Contains(registry.RefStatus))
+                    {
+                        if (registry.RefStatus.Equals("JP001"))
+                        {
+                            lblRemarks.Text = "Serial Count exceed Final Limit";
+
+                            if (grpRef.Location.X != 12 && grpRef.Location.Y != 435)
+                            {
+                                lblRefRemarks.Text = "";
+                                txtRef.Text = "";
+                                grpRef.Location = new Point(12, 435);
+                                grpRef.Enabled = true;
+                            }
+                        }
+
+                        if (registry.RefStatus.Equals("JO002"))
+                        {
+                            lblRemarks.Text = "Serial Count exceed Initial Limit";
+
+                            if (grpRef.Location.X != 12 && grpRef.Location.Y != 435)
+                            {
+                                lblRefRemarks.Text = "";
+                                txtRef.Text = "";
+                                grpRef.Location = new Point(12, 435);
+                                grpRef.Enabled = true;
+                            }
+                        }
+
+                        if (registry.RefStatus.Equals("JO001"))
+                        {
+                            lblRemarks.Text = "Serial Count exceed Initial Limit";
+
+                            if(grpSerialValidation.Location.X != 12 && grpSerialValidation.Location.Y != 435)
+                            {
+                                txtSerialConfirmation.Text = "";
+                                grpSerialValidation.Text = "Serial Validation";
+                                grpSerialValidation.Location = new Point(12, 435);
+                                grpSerialValidation.Enabled = true;
+                            }
+                        }
+
+                        registry.WriteRegistry("pedalStatus", "False");
+                        goto proceed;
+                    }
+
                     // Test Mode
                     if (!registry.IsProd)
                     {
@@ -226,7 +387,7 @@ namespace RenTradeWindowForm
                         // Intial First Step
                         if (registry.ProcessStage == "A1")
                         {
-                            lblRemarks.Text = (registry.PedalStatus) ? "For item pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + ((_machineType == "RG")? _firstPcsInitCount.ToString() : lblBatchTarget.Text): "Click 'Start' button to proceed";
+                            lblRemarks.Text = (registry.PedalStatus) ? "For item pc(s) execution: " + registry.ProcessCounter.ToString() + " out of " + ((_machineType == "RG")? _firstPcsInitCount.ToString() : lblDailyTarget.Text): "Click 'Start' button to proceed";
 
                             grpWireTwist.Enabled = false;
                             grpInput.Enabled = false;
@@ -309,8 +470,8 @@ namespace RenTradeWindowForm
                         // <-- disregard -->
                         if (registry.ProcessStage == "A4A" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
-                            DialogResult result = MessageBox.Show(this, "Please perform (" + _firstPcsInitCount.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount1.ToString();
+                            DialogResult result = MessageBox.Show(this, "Please perform (" + _firstPcsInitCount1.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
                             if (result == DialogResult.OK)
                             {
                                 registry.WriteRegistry("processStage", "A4B");
@@ -322,7 +483,7 @@ namespace RenTradeWindowForm
                         // Caliper Test execution
                         if (registry.ProcessStage == "A4B" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount1.ToString();
 
                             grpInput.Enabled = false;
                             resetGroupInput();
@@ -333,7 +494,7 @@ namespace RenTradeWindowForm
                         // Caliper Test validation if no data within specific timeframe
                         if (registry.ProcessStage == "A4C" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+                            lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount1.ToString();
                             DialogResult result = MessageBox.Show(this, "Do you want to continue CALIPER execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                                 registry.WriteRegistry("processStage", "A4B");
@@ -346,7 +507,7 @@ namespace RenTradeWindowForm
                         // Pull Test message confirmation
                         if (registry.ProcessStage == "A5A" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount2.ToString();
                             registry.WriteRegistry("processStage", "A5B");
 
                             goto proceed;
@@ -355,7 +516,7 @@ namespace RenTradeWindowForm
                         // Pull Test execution
                         if (registry.ProcessStage == "A5B" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount2.ToString();
 
                             grpInput.Enabled = false;
                             resetGroupInput();
@@ -366,7 +527,7 @@ namespace RenTradeWindowForm
                         // Pull Test validation if no data within specific timeframe
                         if (registry.ProcessStage == "A5C" && _machineType == "RG")
                         {
-                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount.ToString();
+                            lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _firstPcsInitCount2.ToString();
                             DialogResult result = MessageBox.Show(this, "Do you want to continue PULL TEST execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
                             {
@@ -431,7 +592,7 @@ namespace RenTradeWindowForm
                         if (registry.ProcessStage == "F1")
                         {
                             lblStatus.Text = "Production";
-                            lblRemarks.Text = "Waiting to finish JO on DIIT: " + registry.ProcessCounter.ToString() + " out of " + learjob.BundleSize.ToString();
+                            lblRemarks.Text = "Waiting to finish JO on DIIT: " + registry.ProcessCounter.ToString() + " out of " + learjob.JobQty.ToString();
                             goto proceed;
                         }
 
@@ -558,9 +719,9 @@ namespace RenTradeWindowForm
                             if (registry.ProcessStage == "C4A" && _machineType == "RG")
                             {
                                 lblStatus.Text = "Mid Piece";
-                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount1.ToString();
 
-                                DialogResult result = MessageBox.Show(this, "Please perform (" + _midPcsInitCount.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                                DialogResult result = MessageBox.Show(this, "Please perform (" + _midPcsInitCount1.ToString() + ") CALIPER/PULL TEST input", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
                                 if (result == DialogResult.OK)
                                 {
                                     registry.WriteRegistry("processStage", "C4B");
@@ -573,7 +734,7 @@ namespace RenTradeWindowForm
                             if (registry.ProcessStage == "C4B" && _machineType == "RG")
                             {
                                 lblStatus.Text = "Mid Piece";
-                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount1.ToString();
 
                                 grpInput.Enabled = false;
                                 resetGroupInput();
@@ -585,7 +746,7 @@ namespace RenTradeWindowForm
                             if (registry.ProcessStage == "C4C" && _machineType == "RG")
                             {
                                 lblStatus.Text = "Mid Piece";
-                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+                                lblRemarks.Text = "For CALIPER input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount1.ToString();
 
                                 DialogResult result = MessageBox.Show(this, "Do you want to continue CALIPER execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                                 if (result == DialogResult.Yes)
@@ -600,7 +761,7 @@ namespace RenTradeWindowForm
                             if (registry.ProcessStage == "C5A" && _machineType == "RG")
                             {
                                 lblStatus.Text = "Mid Piece";
-                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount2.ToString();
                                 registry.WriteRegistry("processStage", "C5B");
 
                                 goto proceed;
@@ -610,7 +771,7 @@ namespace RenTradeWindowForm
                             if (registry.ProcessStage == "C5B" && _machineType == "RG")
                             {
                                 lblStatus.Text = "Mid Piece";
-                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount2.ToString();
 
                                 grpInput.Enabled = false;
                                 resetGroupInput();
@@ -622,7 +783,7 @@ namespace RenTradeWindowForm
                             if (registry.ProcessStage == "C5C" && _machineType == "RG")
                             {
                                 lblStatus.Text = "Mid Piece";
-                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount.ToString();
+                                lblRemarks.Text = "For PULL TEST input: " + registry.TestCounter.ToString() + " out of " + _midPcsInitCount2.ToString();
 
                                 DialogResult result = MessageBox.Show(this, "Do you want to continue PULL TEST execution?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                                 if (result == DialogResult.Yes)
@@ -688,12 +849,12 @@ namespace RenTradeWindowForm
                             // activate pedal to continue
                             lblStatus.Text = "Production";
                             if(_machineType == "RG")
-                                lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                                lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblDailyTarget.Text;
                             else
                             {
                                 int i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
-                                lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblBatchTarget.Text;
+                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblDailyTarget.Text;
                             }
 
                             registry.WriteRegistry("pedalStatus", "True");
@@ -706,12 +867,12 @@ namespace RenTradeWindowForm
                             // activate pedal to continue
                             lblStatus.Text = "Production";
                             if(_machineType == "RG")
-                                lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblBatchTarget.Text;
+                                lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblDailyTarget.Text;
                             else
                             {
                                 int i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
-                                lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblBatchTarget.Text;
+                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblDailyTarget.Text;
                             }
 
 
@@ -755,8 +916,8 @@ namespace RenTradeWindowForm
                             else
                             {
                                 int i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
-                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblBatchTarget.Text;
+                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
 
                                 // activate pedal to continue
                                 registry.WriteRegistry("pedalStatus", "True");
@@ -803,8 +964,8 @@ namespace RenTradeWindowForm
                             else
                             {
                                 int i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
-                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblBatchTarget.Text;
+                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
                                 //lblQuota.Text = (Convert.ToInt16(lblQuota.Text) + 1).ToString();
                             }
                                 
@@ -821,8 +982,8 @@ namespace RenTradeWindowForm
                             else
                             {
                                 int i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblBatchTarget.Text) <= i ? lblBatchTarget.Text : i.ToString();
-                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblBatchTarget.Text;
+                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
                             }
 
                             DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
@@ -1245,7 +1406,12 @@ namespace RenTradeWindowForm
         }
 
         private void resetGroupInput()
-        {   
+        {
+            // Serial Validation Group
+            lblSerialRemarks.Text = "";
+            grpSerialValidation.Text = "";
+            grpSerialValidation.Location = new Point(330, 448);
+
             // Wire Twist Group
             lblWTRemarks.Text = "";
             grpWireTwist.Location = new Point(330, 305);
@@ -1276,7 +1442,6 @@ namespace RenTradeWindowForm
             tmStripMenuItem.Enabled = true;
             ptStripMenuItem.Enabled = false;
             cmStripMenuItem.Enabled = false;
-            registry.WriteRegistry("pedalStatus", "True");
         }
 
         private void btnTerminate_Click(object sender, EventArgs e)
@@ -1342,7 +1507,7 @@ namespace RenTradeWindowForm
                 }
 
                 // log results
-                registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input + " - Ref: " + registry.RefValue);
+                registry.TextLogger(learjob.OrderNumber, "trace", DateTimeOffset.Now + " - [" + learjob.OrderNumber + ":" + learjob.LeadSet + "] - Caliper Dimension: " + input + " - Ref: " + registry.RefValue);
             }
             else
             {
@@ -1522,10 +1687,10 @@ namespace RenTradeWindowForm
 
                     if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
                     {
-                        // not greater than 9
-                        if (value > 9)
+                        // not greater than 1
+                        if (value > 1)
                         {
-                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            lblInputRemarks.Text = "Quantity should not be greater than 1.";
                             return;
                         }
 
@@ -1567,10 +1732,10 @@ namespace RenTradeWindowForm
 
                     if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
                     {
-                        // not greater than 9
-                        if (value > 9)
+                        // not greater than 1
+                        if (value > 1)
                         {
-                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            lblInputRemarks.Text = "Quantity should not be greater than 1.";
                             return;
                         }
 
@@ -1617,10 +1782,10 @@ namespace RenTradeWindowForm
 
                     if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
                     {
-                        // not greater than 9
-                        if (value > 9)
+                        // not greater than 1
+                        if (value > 1)
                         {
-                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            lblInputRemarks.Text = "Quantity should not be greater than 1.";
                             return;
                         }
 
@@ -1699,10 +1864,10 @@ namespace RenTradeWindowForm
 
                     if (int.TryParse(input, out int value) && !String.IsNullOrEmpty(input))
                     {
-                        // not greater than 9
-                        if (value > 9)
+                        // not greater than 1
+                        if (value > 1)
                         {
-                            lblInputRemarks.Text = "Maximum quantity is not greater than 9.";
+                            lblInputRemarks.Text = "Quantity should not be greater than 1.";
                             return;
                         }
 
@@ -1779,7 +1944,7 @@ namespace RenTradeWindowForm
                         txtPitchDim.Text = "0";
                         txtLeftDim.Text = "0";
                         txtRightDim.Text = "0";
-                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + p + ":::" + l + ":::" + r + ":::" + learjob.OrderNumber + ":::" + learjob.LeadSet + "] - Ref: " + registry.RefValue);
+                        registry.TextLogger(learjob.OrderNumber, "trace", DateTimeOffset.Now + " - [" + p + ":::" + l + ":::" + r + ":::" + learjob.OrderNumber + ":::" + learjob.LeadSet + "] - Ref: " + registry.RefValue);
                     }
                     else
                     {
@@ -1821,13 +1986,85 @@ namespace RenTradeWindowForm
 
         private void btnRefOk_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(this, "You are entering: " + txtRef.Text + ". Do you want to proceed?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            string[] stringSeparators = new string[] { "_" };
+            string[] serials = txtRef.Text.Split(stringSeparators, StringSplitOptions.None);
+
+            if (serials.Length != 3)
+            {
+                MessageBox.Show("Invalid serial arrangement. Invalid Format!", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            bool isInitialCountNumeric = int.TryParse(serials[1], out _);
+            bool isFinalCountNumeric = int.TryParse(serials[2], out _);
+
+            // check if initial and final count is numeric
+            if (!isInitialCountNumeric && !isFinalCountNumeric)
+            {
+                MessageBox.Show("Initial and Final Count must be numeric. Invalid Format!", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            // if initial is greater than final count
+            if (Convert.ToInt16(serials[1]) > Convert.ToInt16(serials[2]))
+            {
+                MessageBox.Show("Initial Count should not be greater than Final Count. Invalid Format!", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            string serial = serials[0].Trim().ToString();
+            string initialCount = serials[1].Trim().ToString();
+            string finalCount = serials[2].Trim().ToString();
+
+            DialogResult result = MessageBox.Show(this, "You are entering: " + serial + ". Do you want to proceed?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (result == DialogResult.Yes)
             {
-                registry.WriteRegistry("refValue", txtRef.Text);
-                lblRefRemarks.Text = "";
-                txtRef.Text = "";
-                grpRef.Location = new Point(330, 15);
+                int serialCount = registry.XmlSerialFinder(serial);
+                if (Convert.ToInt16(finalCount) < serialCount)
+                {
+                    // Reference Group
+                    lblRefRemarks.Text = "";
+                    txtRef.Text = "";
+                    grpRef.Location = new Point(330, 15);
+                    registry.WriteRegistry("pedalStatus", "False");
+
+                    if(registry.RefStatus != "JP001" || registry.RefStatus != "JO002") 
+                        registry.WriteRegistry("processStage", "A1");
+
+                    MessageBox.Show("Serial quantity exceed the limit threshold", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                } 
+                else
+                {
+                    registry.WriteRegistry("refValue", serial);
+                    registry.WriteRegistry("refInitialCount", initialCount);
+                    registry.WriteRegistry("refFinalCount", finalCount);
+                    registry.WriteRegistry("refCounter", serialCount <= 0 ? "0" : serialCount.ToString());
+                    registry.WriteRegistry("refStatus", "");
+
+                    // log initial serial number
+                    registry.XmlSerialLogger(serial, initialCount, finalCount, serialCount <= 0? 0 : serialCount);
+
+                    lblRefRemarks.Text = "";
+                    txtRef.Text = "";
+                    grpRef.Location = new Point(330, 15);
+
+                    resetGroupInput();
+                    registry.WriteRegistry("pedalStatus", "True");
+
+                    registry.ReadRegistry();
+
+                    if (registry.RefStatus != "JP001" || registry.RefStatus != "JO002")
+                    {
+                        btnStart.Enabled = false;
+                        btnTerminate.Enabled = true;
+
+                        stStripMenuItem.Enabled = false;
+                        tmStripMenuItem.Enabled = true;
+                        ptStripMenuItem.Enabled = false;
+                        cmStripMenuItem.Enabled = false;
+                    }
+                }
             }
             else
             {
@@ -1846,7 +2083,70 @@ namespace RenTradeWindowForm
             txtRef.Text = "";
             grpRef.Location = new Point(330, 15);
             registry.WriteRegistry("pedalStatus", "False");
-            registry.WriteRegistry("processStage", "A1");
+
+            if (registry.RefStatus != "JP001")
+                registry.WriteRegistry("processStage", "A1");
+            else
+            {
+                registry.WriteRegistry("refStatus", "JP000");
+            }
+        }
+
+        private void serialQueryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SerialQueryForm serialForm = new SerialQueryForm(_options);
+            serialForm.ShowDialog();
+        }
+
+        private void btnSerialOK_Click(object sender, EventArgs e)
+        {
+            //https://hashtoolkit.com/decrypt-hash/
+            MD5 md5 = new MD5CryptoServiceProvider();
+
+            //compute hash from the bytes of text  
+            md5.ComputeHash(System.Text.ASCIIEncoding.ASCII.GetBytes(txtSerialConfirmation.Text));
+
+            //get hash result after compute it  
+            byte[] result = md5.Hash;
+
+            System.Text.StringBuilder strBuilder = new System.Text.StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+            {
+                //change it into 2 hexadecimal digits  
+                //for each byte  
+                strBuilder.Append(result[i].ToString("x2"));
+            }
+
+            if (strBuilder.ToString() == _adminKey)
+            {
+                registry.WriteRegistry("refStatus", "JO00OK");
+                registry.WriteRegistry("pedalStatus", "True");
+
+                // overwrite node 
+                registry.XmlSerialLogger(registry.RefValue, "Status", "OK");
+
+                // Serial Group
+                lblSerialRemarks.Text = "";
+                txtSerialConfirmation.Text = "";
+                grpSerialValidation.Location = new Point(330, 448);
+                grpSerialValidation.Enabled = false;
+            }
+            else
+            {
+                MessageBox.Show("Please input Admin password to continue.", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+        }
+
+        private void btnSerialCancel_Click(object sender, EventArgs e)
+        {
+            // Serial Group
+            lblSerialRemarks.Text = "";
+            txtSerialConfirmation.Text = "";
+            grpSerialValidation.Location = new Point(330, 448);
+            grpSerialValidation.Enabled = false;
+            registry.WriteRegistry("pedalStatus", "False");
+            registry.WriteRegistry("refStatus", "JO000");
         }
     }
 }

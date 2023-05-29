@@ -37,6 +37,8 @@ namespace RenTradeWindowForm
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.ptStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.serialQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -62,7 +64,15 @@ namespace RenTradeWindowForm
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lblQuota = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.grpSerialValidation = new System.Windows.Forms.GroupBox();
+            this.btnSerialCancel = new System.Windows.Forms.Button();
+            this.txtSerialConfirmation = new System.Windows.Forms.TextBox();
+            this.btnSerialOK = new System.Windows.Forms.Button();
+            this.lblSerialRemarks = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.lblRefCount = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.lblRefNos = new System.Windows.Forms.Label();
             this.grpRef = new System.Windows.Forms.GroupBox();
@@ -89,8 +99,6 @@ namespace RenTradeWindowForm
             this.btnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblMachineName = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.lblRefCount = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -98,6 +106,7 @@ namespace RenTradeWindowForm
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.grpSerialValidation.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.grpRef.SuspendLayout();
             this.grpInput.SuspendLayout();
@@ -116,6 +125,7 @@ namespace RenTradeWindowForm
             this.menuStrip.BackColor = System.Drawing.SystemColors.Control;
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.actionStripMenuItem,
+            this.viewToolStripMenuItem,
             this.helpStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
@@ -171,6 +181,21 @@ namespace RenTradeWindowForm
             this.cmStripMenuItem.Text = "Caliper Entry";
             this.cmStripMenuItem.Visible = false;
             this.cmStripMenuItem.Click += new System.EventHandler(this.cmStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.serialQueryToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // serialQueryToolStripMenuItem
+            // 
+            this.serialQueryToolStripMenuItem.Name = "serialQueryToolStripMenuItem";
+            this.serialQueryToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.serialQueryToolStripMenuItem.Text = "Serial Query";
+            this.serialQueryToolStripMenuItem.Click += new System.EventHandler(this.serialQueryToolStripMenuItem_Click);
             // 
             // helpStripMenuItem
             // 
@@ -260,18 +285,18 @@ namespace RenTradeWindowForm
             // lblBatchTarget
             // 
             this.lblBatchTarget.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblBatchTarget.Location = new System.Drawing.Point(220, 44);
+            this.lblBatchTarget.Location = new System.Drawing.Point(234, 44);
             this.lblBatchTarget.Name = "lblBatchTarget";
-            this.lblBatchTarget.Size = new System.Drawing.Size(50, 13);
+            this.lblBatchTarget.Size = new System.Drawing.Size(36, 13);
             this.lblBatchTarget.TabIndex = 7;
             this.lblBatchTarget.Text = "0";
             // 
             // lblDailyTarget
             // 
             this.lblDailyTarget.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblDailyTarget.Location = new System.Drawing.Point(220, 23);
+            this.lblDailyTarget.Location = new System.Drawing.Point(234, 23);
             this.lblDailyTarget.Name = "lblDailyTarget";
-            this.lblDailyTarget.Size = new System.Drawing.Size(50, 13);
+            this.lblDailyTarget.Size = new System.Drawing.Size(36, 13);
             this.lblDailyTarget.TabIndex = 6;
             this.lblDailyTarget.Text = "0";
             // 
@@ -279,7 +304,7 @@ namespace RenTradeWindowForm
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(135, 44);
+            this.label7.Location = new System.Drawing.Point(148, 44);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(69, 13);
             this.label7.TabIndex = 5;
@@ -289,7 +314,7 @@ namespace RenTradeWindowForm
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label6.Location = new System.Drawing.Point(135, 23);
+            this.label6.Location = new System.Drawing.Point(148, 23);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(87, 13);
             this.label6.TabIndex = 4;
@@ -300,7 +325,7 @@ namespace RenTradeWindowForm
             this.lblOrderNos.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblOrderNos.Location = new System.Drawing.Point(68, 44);
             this.lblOrderNos.Name = "lblOrderNos";
-            this.lblOrderNos.Size = new System.Drawing.Size(60, 13);
+            this.lblOrderNos.Size = new System.Drawing.Size(72, 13);
             this.lblOrderNos.TabIndex = 3;
             this.lblOrderNos.Text = "n/a";
             // 
@@ -309,7 +334,7 @@ namespace RenTradeWindowForm
             this.lblLeadSet.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblLeadSet.Location = new System.Drawing.Point(68, 23);
             this.lblLeadSet.Name = "lblLeadSet";
-            this.lblLeadSet.Size = new System.Drawing.Size(60, 13);
+            this.lblLeadSet.Size = new System.Drawing.Size(72, 13);
             this.lblLeadSet.TabIndex = 2;
             this.lblLeadSet.Text = "n/a";
             // 
@@ -407,6 +432,7 @@ namespace RenTradeWindowForm
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panel1.Controls.Add(this.grpSerialValidation);
             this.panel1.Controls.Add(this.groupBox5);
             this.panel1.Controls.Add(this.grpRef);
             this.panel1.Controls.Add(this.grpInput);
@@ -425,6 +451,79 @@ namespace RenTradeWindowForm
             this.panel1.Size = new System.Drawing.Size(309, 625);
             this.panel1.TabIndex = 5;
             // 
+            // grpSerialValidation
+            // 
+            this.grpSerialValidation.BackColor = System.Drawing.SystemColors.Control;
+            this.grpSerialValidation.Controls.Add(this.btnSerialCancel);
+            this.grpSerialValidation.Controls.Add(this.txtSerialConfirmation);
+            this.grpSerialValidation.Controls.Add(this.btnSerialOK);
+            this.grpSerialValidation.Controls.Add(this.lblSerialRemarks);
+            this.grpSerialValidation.Controls.Add(this.label13);
+            this.grpSerialValidation.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.grpSerialValidation.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.grpSerialValidation.Location = new System.Drawing.Point(330, 448);
+            this.grpSerialValidation.Name = "grpSerialValidation";
+            this.grpSerialValidation.Size = new System.Drawing.Size(276, 137);
+            this.grpSerialValidation.TabIndex = 21;
+            this.grpSerialValidation.TabStop = false;
+            this.grpSerialValidation.Text = "Serial Validation";
+            // 
+            // btnSerialCancel
+            // 
+            this.btnSerialCancel.BackColor = System.Drawing.SystemColors.Control;
+            this.btnSerialCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnSerialCancel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnSerialCancel.ForeColor = System.Drawing.Color.Black;
+            this.btnSerialCancel.Location = new System.Drawing.Point(222, 54);
+            this.btnSerialCancel.Name = "btnSerialCancel";
+            this.btnSerialCancel.Size = new System.Drawing.Size(44, 29);
+            this.btnSerialCancel.TabIndex = 5;
+            this.btnSerialCancel.Text = "Cancel";
+            this.btnSerialCancel.UseVisualStyleBackColor = false;
+            this.btnSerialCancel.Click += new System.EventHandler(this.btnSerialCancel_Click);
+            // 
+            // txtSerialConfirmation
+            // 
+            this.txtSerialConfirmation.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtSerialConfirmation.Location = new System.Drawing.Point(6, 54);
+            this.txtSerialConfirmation.Name = "txtSerialConfirmation";
+            this.txtSerialConfirmation.PasswordChar = '*';
+            this.txtSerialConfirmation.Size = new System.Drawing.Size(162, 29);
+            this.txtSerialConfirmation.TabIndex = 3;
+            // 
+            // btnSerialOK
+            // 
+            this.btnSerialOK.BackColor = System.Drawing.SystemColors.Control;
+            this.btnSerialOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnSerialOK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnSerialOK.ForeColor = System.Drawing.Color.Black;
+            this.btnSerialOK.Location = new System.Drawing.Point(174, 54);
+            this.btnSerialOK.Name = "btnSerialOK";
+            this.btnSerialOK.Size = new System.Drawing.Size(44, 29);
+            this.btnSerialOK.TabIndex = 4;
+            this.btnSerialOK.Text = "OK";
+            this.btnSerialOK.UseVisualStyleBackColor = false;
+            this.btnSerialOK.Click += new System.EventHandler(this.btnSerialOK_Click);
+            // 
+            // lblSerialRemarks
+            // 
+            this.lblSerialRemarks.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblSerialRemarks.Location = new System.Drawing.Point(4, 86);
+            this.lblSerialRemarks.Name = "lblSerialRemarks";
+            this.lblSerialRemarks.Size = new System.Drawing.Size(260, 24);
+            this.lblSerialRemarks.TabIndex = 11;
+            this.lblSerialRemarks.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label13.Location = new System.Drawing.Point(6, 38);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(184, 13);
+            this.label13.TabIndex = 14;
+            this.label13.Text = "Please enter Password to continue";
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.lblRefCount);
@@ -436,6 +535,25 @@ namespace RenTradeWindowForm
             this.groupBox5.Size = new System.Drawing.Size(276, 45);
             this.groupBox5.TabIndex = 20;
             this.groupBox5.TabStop = false;
+            // 
+            // lblRefCount
+            // 
+            this.lblRefCount.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblRefCount.Location = new System.Drawing.Point(219, 19);
+            this.lblRefCount.Name = "lblRefCount";
+            this.lblRefCount.Size = new System.Drawing.Size(50, 13);
+            this.lblRefCount.TabIndex = 21;
+            this.lblRefCount.Text = "0";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label10.Location = new System.Drawing.Point(147, 19);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(62, 13);
+            this.label10.TabIndex = 20;
+            this.label10.Text = "Ref Count:";
             // 
             // label4
             // 
@@ -743,25 +861,6 @@ namespace RenTradeWindowForm
             this.lblMachineName.Text = "XXX-00-0000";
             this.lblMachineName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label10.Location = new System.Drawing.Point(147, 19);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(62, 13);
-            this.label10.TabIndex = 20;
-            this.label10.Text = "Ref Count:";
-            // 
-            // lblRefCount
-            // 
-            this.lblRefCount.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblRefCount.Location = new System.Drawing.Point(219, 19);
-            this.lblRefCount.Name = "lblRefCount";
-            this.lblRefCount.Size = new System.Drawing.Size(50, 13);
-            this.lblRefCount.TabIndex = 21;
-            this.lblRefCount.Text = "0";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -790,6 +889,8 @@ namespace RenTradeWindowForm
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.grpSerialValidation.ResumeLayout(false);
+            this.grpSerialValidation.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.grpRef.ResumeLayout(false);
@@ -868,6 +969,14 @@ namespace RenTradeWindowForm
         private System.Windows.Forms.Button btnRefCancel;
         private System.Windows.Forms.Label lblRefCount;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem serialQueryToolStripMenuItem;
+        private System.Windows.Forms.GroupBox grpSerialValidation;
+        private System.Windows.Forms.Button btnSerialCancel;
+        private System.Windows.Forms.TextBox txtSerialConfirmation;
+        private System.Windows.Forms.Button btnSerialOK;
+        private System.Windows.Forms.Label lblSerialRemarks;
+        private System.Windows.Forms.Label label13;
     }
 }
 

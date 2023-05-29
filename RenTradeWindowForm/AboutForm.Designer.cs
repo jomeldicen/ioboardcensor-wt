@@ -30,6 +30,12 @@ namespace RenTradeWindowForm
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblLicenseType = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.lblProdKey = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.lblProdId = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -38,12 +44,6 @@ namespace RenTradeWindowForm
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.lblProdId = new System.Windows.Forms.Label();
-            this.lblProdKey = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.lblLicenseType = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -69,6 +69,66 @@ namespace RenTradeWindowForm
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(512, 382);
             this.panel1.TabIndex = 0;
+            // 
+            // lblLicenseType
+            // 
+            this.lblLicenseType.AutoSize = true;
+            this.lblLicenseType.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblLicenseType.Location = new System.Drawing.Point(167, 328);
+            this.lblLicenseType.Name = "lblLicenseType";
+            this.lblLicenseType.Size = new System.Drawing.Size(13, 14);
+            this.lblLicenseType.TabIndex = 12;
+            this.lblLicenseType.Text = "?";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label11.Location = new System.Drawing.Point(80, 328);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(81, 14);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "License Type: ";
+            // 
+            // lblProdKey
+            // 
+            this.lblProdKey.AutoSize = true;
+            this.lblProdKey.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblProdKey.Location = new System.Drawing.Point(167, 311);
+            this.lblProdKey.Name = "lblProdKey";
+            this.lblProdKey.Size = new System.Drawing.Size(13, 14);
+            this.lblProdKey.TabIndex = 10;
+            this.lblProdKey.Text = "?";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label10.Location = new System.Drawing.Point(80, 311);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(74, 14);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "Product Key: ";
+            // 
+            // lblProdId
+            // 
+            this.lblProdId.AutoSize = true;
+            this.lblProdId.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblProdId.Location = new System.Drawing.Point(167, 294);
+            this.lblProdId.Name = "lblProdId";
+            this.lblProdId.Size = new System.Drawing.Size(13, 14);
+            this.lblProdId.TabIndex = 8;
+            this.lblProdId.Text = "?";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label8.Location = new System.Drawing.Point(80, 294);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(68, 14);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "Product ID: ";
             // 
             // label7
             // 
@@ -152,66 +212,6 @@ namespace RenTradeWindowForm
             this.label6.TabIndex = 6;
             this.label6.Text = "label6";
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label8.Location = new System.Drawing.Point(80, 294);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(68, 14);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "Product ID: ";
-            // 
-            // lblProdId
-            // 
-            this.lblProdId.AutoSize = true;
-            this.lblProdId.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblProdId.Location = new System.Drawing.Point(167, 294);
-            this.lblProdId.Name = "lblProdId";
-            this.lblProdId.Size = new System.Drawing.Size(13, 14);
-            this.lblProdId.TabIndex = 8;
-            this.lblProdId.Text = "?";
-            // 
-            // lblProdKey
-            // 
-            this.lblProdKey.AutoSize = true;
-            this.lblProdKey.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblProdKey.Location = new System.Drawing.Point(167, 311);
-            this.lblProdKey.Name = "lblProdKey";
-            this.lblProdKey.Size = new System.Drawing.Size(13, 14);
-            this.lblProdKey.TabIndex = 10;
-            this.lblProdKey.Text = "?";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label10.Location = new System.Drawing.Point(80, 311);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(74, 14);
-            this.label10.TabIndex = 9;
-            this.label10.Text = "Product Key: ";
-            // 
-            // lblLicenseType
-            // 
-            this.lblLicenseType.AutoSize = true;
-            this.lblLicenseType.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblLicenseType.Location = new System.Drawing.Point(167, 328);
-            this.lblLicenseType.Name = "lblLicenseType";
-            this.lblLicenseType.Size = new System.Drawing.Size(13, 14);
-            this.lblLicenseType.TabIndex = 12;
-            this.lblLicenseType.Text = "?";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label11.Location = new System.Drawing.Point(80, 328);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(81, 14);
-            this.label11.TabIndex = 11;
-            this.label11.Text = "License Type: ";
-            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -223,7 +223,6 @@ namespace RenTradeWindowForm
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "About RenTrade Industrial Machine & Installation Services";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.AboutForm_Load);

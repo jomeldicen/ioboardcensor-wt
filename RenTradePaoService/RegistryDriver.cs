@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace RenTradeWindowService
 {
@@ -25,12 +26,15 @@ namespace RenTradeWindowService
         public int CycleCounter { get; set; }
         public string ProcessStage { get; private set; }
         public bool ReelStatus { get; private set; }
+        public bool EndJob { get; private set; }
 
         public string IOBoardStatus { get; private set; }
         public string OldOrderNos { get; private set; }
         public string JobInfo { get; private set; }
         public string RefValue { get; private set; }
-        public string RefOldValue { get; private set; }
+        public string RefStatus { get; private set; }
+        public int RefInitialCount { get; set; }
+        public int RefFinalCount { get; set; }
         public int RefCounter { get; set; }
 
         private readonly string _logPath;
@@ -64,13 +68,17 @@ namespace RenTradeWindowService
                 key.SetValue("quotaCounter", "0");              // number of cummulative production count
                 key.SetValue("cycleCounter", "0");              // number of cycle count
 
-                key.SetValue("processStage", "A1");              // A1-validation if achieve test qty, A2-1st pull test, A3-1st calipher test, 
-                                                                 // B1-validation if achieve prod qty, B2-2nd pull test, B3-2nd calipher test, B4-
+                key.SetValue("processStage", "A1");             // A1-validation if achieve test qty, A2-1st pull test, A3-1st calipher test, 
+                                                                // B1-validation if achieve prod qty, B2-2nd pull test, B3-2nd calipher test, B4-
                 key.SetValue("reelStatus", "True");             // true means reel material is detected
 
                 key.SetValue("ioBoardStatus", "");              // IO Board Status
                 key.SetValue("refValue", "");                   // 
-                key.SetValue("refOldValue", "");                // 
+                key.SetValue("refStatus", "");                   // 
+                key.SetValue("refCounter", "0");                // 
+                key.SetValue("refInitialCount", "0");           // 
+                key.SetValue("refFinalCount", "0");             // 
+                key.SetValue("endJob", "False");                // End of Job
 
                 key.Close();
             }
@@ -103,7 +111,12 @@ namespace RenTradeWindowService
                     this.OldOrderNos = key.GetValue("oldOrderNos").ToString();
                     this.JobInfo = key.GetValue("jobInfo").ToString();
                     this.RefValue = key.GetValue("refValue").ToString();
-                    this.RefOldValue = key.GetValue("refOldValue").ToString();
+                    this.RefStatus = key.GetValue("refStatus").ToString();
+                    this.RefInitialCount = Convert.ToInt16(key.GetValue("refInitialCount"));
+                    this.RefFinalCount = Convert.ToInt16(key.GetValue("refFinalCount"));
+                    this.RefCounter = Convert.ToInt16(key.GetValue("refCounter"));
+
+                    this.EndJob = Convert.ToBoolean(key.GetValue("endJob"));
 
                     key.Close();
                 }
@@ -135,6 +148,10 @@ namespace RenTradeWindowService
         {
             this.WriteRegistry("jobInfo", "");
             this.WriteRegistry("refValue", "");
+            this.WriteRegistry("refStatus", "");
+            this.WriteRegistry("refInitialCount", "0");
+            this.WriteRegistry("refFinalCount", "0");
+            this.WriteRegistry("refCounter", "0");
             this.WriteRegistry("pedalFlag", "0");
             this.WriteRegistry("isProd", "False");
             this.WriteRegistry("pedalStatus", "False");
@@ -145,18 +162,117 @@ namespace RenTradeWindowService
 
             this.WriteRegistry("reelStatus", "True");
             this.WriteRegistry("ioBoardStatus", "X0");
+            this.WriteRegistry("endJob", "False");
         }
 
         public void ErrorLogger(string message)
         {
+            string errorFolder = "error";
+            string subFolderPath = this.@_logPath + errorFolder + "\\";
+
+            if (!Directory.Exists(subFolderPath))
+                Directory.CreateDirectory(subFolderPath);
+
             this.logs = new string[] { DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt") + " - ERROR: " + message };
-            File.AppendAllLines(this.@_logPath + "ErrorLogs.txt", this.logs);
+            File.AppendAllLines(subFolderPath + "ErrorLogs.txt", this.logs);
         }
 
-        public void TextLogger(string filename, string message)
+        public void TextLogger(string filename, string folder, string message)
         {
+            string dateFolder = DateTime.Now.ToString("yyyyMMdd");
+            string subFolderPath = this.@_logPath + folder + "\\" + dateFolder + "\\";
+
+            if (!Directory.Exists(subFolderPath))
+                Directory.CreateDirectory(subFolderPath);
+
             string[] lines = new string[] { message.ToString() };
-            File.AppendAllLines(this.@_logPath + "datalogs-" + filename + ".txt", lines);
+            File.AppendAllLines(subFolderPath + "datalogs-" + filename + ".txt", lines);
+        }
+
+        public int XmlSerialFinder(string serial)
+        {
+            string subFolderPath = this.@_logPath + "serial\\";
+
+            if (!Directory.Exists(subFolderPath))
+                Directory.CreateDirectory(subFolderPath);
+
+            string filePath = subFolderPath + serial + ".xml";
+            int serialCount = 0;
+            //return filePath + " " + File.Exists(filePath).ToString();
+            if (File.Exists(filePath))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(filePath);
+                serialCount = Convert.ToInt16(xmlDoc.SelectSingleNode("/Serial/Count").InnerText);
+            }
+            else
+            {
+                serialCount = -1;
+            }
+
+            return serialCount;
+        }
+
+        public void XmlSerialLogger(string serial, string type, string value)
+        {
+            string subFolderPath = this.@_logPath + "serial\\";
+
+            if (!Directory.Exists(subFolderPath))
+                Directory.CreateDirectory(subFolderPath);
+
+            string filePath = subFolderPath + serial + ".xml";
+            if (File.Exists(filePath))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(filePath);
+                xmlDoc.SelectSingleNode("/Serial/" + type).InnerText = value;
+                xmlDoc.Save(filePath);
+            }
+        }
+
+        public void XmlSerialLogger(string serial, string initialCount, string finalCount, int count)
+        {
+            string subFolderPath = this.@_logPath + "serial\\";
+
+            if (!Directory.Exists(subFolderPath))
+                Directory.CreateDirectory(subFolderPath);
+
+            string filePath = subFolderPath + serial + ".xml";
+            if (File.Exists(filePath))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(filePath);
+                xmlDoc.SelectSingleNode("/Serial/Count").InnerText = (count).ToString();
+                xmlDoc.Save(filePath);
+            } 
+            else
+            {
+                XmlTextWriter writer = new XmlTextWriter(filePath, Encoding.UTF8);
+                writer.WriteStartDocument(true);
+                writer.Formatting = Formatting.Indented;
+                writer.Indentation = 2;
+                writer.WriteStartElement("Serial");
+                writer.WriteStartElement("RefNos");
+                writer.WriteString(serial);
+                writer.WriteEndElement();
+                writer.WriteStartElement("InitialLimit");
+                writer.WriteString(initialCount);
+                writer.WriteEndElement();
+                writer.WriteStartElement("FinalLimit");
+                writer.WriteString(finalCount);
+                writer.WriteEndElement();
+                writer.WriteStartElement("Count");
+                writer.WriteString(count.ToString());
+                writer.WriteEndElement();
+                writer.WriteStartElement("Status");
+                writer.WriteString("-");
+                writer.WriteEndElement();
+                writer.WriteStartElement("DateLog");
+                writer.WriteString(DateTime.Now.ToString("MM/dd/yyyy H:mm:ss"));
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+                writer.Close();
+            }
         }
     }
 }

@@ -33,11 +33,18 @@ namespace RenTradeWindowService
         private readonly int _mgQueueWaitingTime;
 
         private readonly int _firstPcsInitCount;        // test pcs
+        private readonly int _firstPcsInitCount1;        // calipher pcs
+        private readonly int _firstPcsInitCount2;        // pull test pcs
         private readonly int _midPcsInitCount;          // quota pcs
+        private readonly int _midPcsInitCount1;          // quota pcs
+        private readonly int _midPcsInitCount2;          // quota pcs
         private readonly int _lastPcsInitCount;         // prod pcs
+        private readonly int _lastPcsInitCount1;         // prod pcs
+        private readonly int _lastPcsInitCount2;         // prod pcs
         private readonly int _quotaInitCount;
         private readonly int _wireTwistInitCount;
         private readonly int _wireTwistCycleCount;
+        private readonly string _adminKey;
 
         private readonly string _comPort;
 
@@ -69,13 +76,20 @@ namespace RenTradeWindowService
             _mgQueueWaitingTime = _options.Value.MsgQueueWaitingTime;
 
             _firstPcsInitCount = _options.Value.FirstPcsInitCount;
+            _firstPcsInitCount1 = _options.Value.FirstPcsInitCount1;
+            _firstPcsInitCount2 = _options.Value.FirstPcsInitCount2;
             _midPcsInitCount = _options.Value.MidPcsInitCount;
+            _midPcsInitCount1 = _options.Value.MidPcsInitCount1;
+            _midPcsInitCount2 = _options.Value.MidPcsInitCount2;
             _lastPcsInitCount = _options.Value.LastPcsInitCount;
+            _lastPcsInitCount1 = _options.Value.LastPcsInitCount1;
+            _lastPcsInitCount2 = _options.Value.LastPcsInitCount2;
             _quotaInitCount = _options.Value.QuotaInitCount;
             _wireTwistInitCount = _options.Value.WireTwistInitCount;
             _wireTwistCycleCount = _options.Value.WireTwistCycleCount;
+            _adminKey = _options.Value.AdminKey;
 
-            _comPort = options.Value.ComPort;
+            _comPort = options.Value.ComPort;            
 
             // create queue name if not existed
             if (!MessageQueue.Exists(this._defaultMsgQueName)) MessageQueue.Create(this._defaultMsgQueName);
@@ -203,6 +217,41 @@ namespace RenTradeWindowService
                             goto proceed;
                         }
 
+                        // JO000 - hit the ref serial counter equal ref initial count
+                        // JO001 - proceed if 'YES' when ref serial counter equal ref initial count
+                        // JO002 - proceed if 'NO' // Upload serial
+                        // JP001 - proceed if 'YES' when ref serial counter equal ref final count
+                        // JP002 - proceed if 'NO' // waiting to end production from DIIT
+                        // check serial count excess intial or final limit
+                        registry.ReadRegistry();
+                        if (registry.RefCounter != 0 && registry.RefCounter >= registry.RefFinalCount && (String.IsNullOrEmpty(registry.RefStatus) || registry.RefStatus == "JO00OK"))
+                        {
+                            registry.WriteRegistry("refStatus", "JP000");
+                            registry.WriteRegistry("pedalStatus", "False");
+                            goto proceed;
+                        }
+
+                        string[] serialArray = { "JP000", "JP001", "JP002" };
+                        if (registry.RefCounter >= registry.RefFinalCount && serialArray.Contains(registry.RefStatus))
+                        {
+                            registry.WriteRegistry("pedalStatus", "False");
+                            goto proceed;
+                        }
+
+                        if (registry.RefCounter == registry.RefInitialCount && registry.RefCounter != registry.RefFinalCount && (String.IsNullOrEmpty(registry.RefStatus)))
+                        {
+                            registry.WriteRegistry("refStatus", "JO000");
+                            registry.WriteRegistry("pedalStatus", "False");
+                            goto proceed;
+                        }
+
+                        string[] serialArray2 = { "JO000", "JO001", "JO002" };
+                        if (registry.RefCounter == registry.RefInitialCount && registry.RefCounter != registry.RefFinalCount && serialArray2.Contains(registry.RefStatus))
+                        {
+                            registry.WriteRegistry("pedalStatus", "False");
+                            goto proceed;
+                        }
+
                         // in Test Mode
                         if (!registry.IsProd)
                         {
@@ -238,7 +287,7 @@ namespace RenTradeWindowService
                                         {
                                         
                                             // for caliper input
-                                            if (registry.TestCounter == _firstPcsInitCount && registry.ProcessStage == "A4B")
+                                            if (registry.TestCounter == _firstPcsInitCount1 && registry.ProcessStage == "A4B")
                                             {
                                                 registry.WriteRegistry("testCounter", "0");
                                                 registry.WriteRegistry("processStage", "A5A");
@@ -246,7 +295,7 @@ namespace RenTradeWindowService
                                             }
 
                                             // for pull test input
-                                            if (registry.TestCounter == _firstPcsInitCount && registry.ProcessStage == "A5B")
+                                            if (registry.TestCounter == _firstPcsInitCount2 && registry.ProcessStage == "A5B")
                                             {
                                                 registry.WriteRegistry("processStage", "A8");
                                                 goto proceed;
@@ -341,7 +390,7 @@ namespace RenTradeWindowService
                                         {
                                         
                                             // for caliper input
-                                            if (registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C4B")
+                                            if (registry.TestCounter == _midPcsInitCount1 && registry.ProcessStage == "C4B")
                                             {
                                                 registry.WriteRegistry("testCounter", "0");
                                                 registry.WriteRegistry("processStage", "C5A");
@@ -349,7 +398,7 @@ namespace RenTradeWindowService
                                             }
 
                                             // for pull test input
-                                            if (registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C5B")
+                                            if (registry.TestCounter == _midPcsInitCount2 && registry.ProcessStage == "C5B")
                                             {
                                                 registry.WriteRegistry("processStage", "C8");
                                                 goto proceed;
@@ -381,19 +430,19 @@ namespace RenTradeWindowService
                             //*********************** End Daily Quota Section ***********************//
 
                             // check if pedal hit counter exceeds the production quantity
-                            int bundleSize = learjob.BundleSize;
+                            int jobQty = learjob.JobQty;
 
                             if(_machineType == "RG")
                             {
-                                if (registry.ProcessCounter >= bundleSize)
+                                if (registry.ProcessCounter >= jobQty)
                                 {
                                     //*********************** Start Production Section ***********************//
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
-                                    if (registry.ProcessCounter >= bundleSize && registry.ProcessStage == "B1")
+                                    if (registry.ProcessCounter >= jobQty && registry.ProcessStage == "B1")
                                     {
                                         registry.WriteRegistry("processStage", "B2");
                                         registry.WriteRegistry("pedalStatus", "False");
-                                        registry.WriteRegistry("processCounter", bundleSize.ToString());
+                                        registry.WriteRegistry("processCounter", jobQty.ToString());
 
                                         goto proceed;
                                     }
@@ -409,7 +458,7 @@ namespace RenTradeWindowService
 
                                     // Regular Machine
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
-                                    if (registry.ProcessCounter == bundleSize && (registry.ProcessStage == "B4B" || registry.ProcessStage == "B5B" || registry.ProcessStage == "B6B"))
+                                    if (registry.ProcessCounter == jobQty && (registry.ProcessStage == "B4B" || registry.ProcessStage == "B5B" || registry.ProcessStage == "B6B"))
                                     {
                                         // check if pull test counter is equal to last pcs count
                                         lastpcsLabelCounter:
@@ -417,7 +466,7 @@ namespace RenTradeWindowService
                                         {
 
                                             // for caliper input
-                                            if (registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B4B")
+                                            if (registry.TestCounter == _lastPcsInitCount1 && registry.ProcessStage == "B4B")
                                             {
                                                 registry.WriteRegistry("testCounter", "0");
                                                 registry.WriteRegistry("processStage", "B5A");
@@ -426,7 +475,7 @@ namespace RenTradeWindowService
                                             }
 
                                             // for pull test input
-                                            if (registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B5B")
+                                            if (registry.TestCounter == _lastPcsInitCount2 && registry.ProcessStage == "B5B")
                                             {
                                                 registry.WriteRegistry("processStage", "B8");
 
@@ -459,17 +508,17 @@ namespace RenTradeWindowService
                             } 
                             else // machine time WT
                             {
-                                int cycleCount = (_wireTwistInitCount > 0) ? learjob.BundleSize / _wireTwistInitCount : 0;
-                                bundleSize = (learjob.BundleSize % _wireTwistInitCount == 0)? cycleCount - _lastPcsInitCount : cycleCount;
-                                if (registry.ProcessCounter >= bundleSize)
+                                int cycleCount = (_wireTwistInitCount > 0) ? learjob.JobQty / _wireTwistInitCount : 0;
+                                jobQty = (learjob.JobQty % _wireTwistInitCount == 0)? cycleCount - _lastPcsInitCount : cycleCount;
+                                if (registry.ProcessCounter >= jobQty)
                                 {
                                     //*********************** Start Production Section ***********************//
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
-                                    if (registry.ProcessCounter >= bundleSize && registry.ProcessStage == "B1")
+                                    if (registry.ProcessCounter >= jobQty && registry.ProcessStage == "B1")
                                     {
                                         registry.WriteRegistry("processStage", "B2");
                                         registry.WriteRegistry("pedalStatus", "False");
-                                        registry.WriteRegistry("processCounter", bundleSize.ToString());
+                                        registry.WriteRegistry("processCounter", jobQty.ToString());
 
                                         goto proceed;
                                     }
@@ -484,7 +533,7 @@ namespace RenTradeWindowService
                                     }
 
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
-                                    if (registry.ProcessCounter == bundleSize + _lastPcsInitCount && (registry.ProcessStage == "B6B"))
+                                    if (registry.ProcessCounter == jobQty + _lastPcsInitCount && (registry.ProcessStage == "B6B"))
                                     {
                                         // for wire twist input
                                         if (registry.TestCounter == _wireTwistInitCount && registry.ProcessStage == "B6B")
@@ -628,7 +677,7 @@ namespace RenTradeWindowService
                     if (isLeadSetExist)
                     {
                         // log message queue results
-                        registry.TextLogger(learjob.OrderNumber, DateTimeOffset.Now + " - [" + label + "] - Ref: " + registry.RefValue);
+                        registry.TextLogger(learjob.OrderNumber, "trace", DateTimeOffset.Now + " - [" + label + "] - Ref: " + registry.RefValue);
 
                         registry.TestCounter++;
                         registry.WriteRegistry("testCounter", registry.TestCounter.ToString());
@@ -696,8 +745,7 @@ namespace RenTradeWindowService
             //{
             //    oIOBoard.ioBoard_SetOutput(0, "OFF");
             //    return false;
-            //}
-           
+            //}           
 
             // reel section
             if (!ReadIOStatus("I", 1) || !ReadIOStatus("I", 2))
@@ -734,10 +782,10 @@ namespace RenTradeWindowService
                         if (process.Contains(registry.ProcessStage))
                         {
                             // validate if test counter is equal to last pcs then exit counter
-                            if (registry.ProcessCounter == learjob.BundleSize && registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B3") return false;
+                            if (registry.ProcessCounter == learjob.JobQty && registry.TestCounter == _lastPcsInitCount && registry.ProcessStage == "B3") return false;
 
                             // validate if test counter is equal to last pcs then exit counter
-                            if (registry.ProcessCounter == learjob.BundleSize && registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C3") return false;
+                            if (registry.ProcessCounter == learjob.JobQty && registry.TestCounter == _midPcsInitCount && registry.ProcessStage == "C3") return false;
 
                             if(_machineType == "RG")
                             {
@@ -766,7 +814,17 @@ namespace RenTradeWindowService
                                     }
                                 }
                             }
-                        } else
+
+                            // check serial status
+                            if (String.IsNullOrEmpty(registry.RefStatus) || (registry.RefStatus == "JO00OK" && registry.ProcessStage != "A1"))
+                            {
+                                // accumulate RefCounter if same serial
+                                registry.RefCounter++;
+                                registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                registry.XmlSerialLogger(registry.RefValue, "Count", registry.RefCounter.ToString());
+                            }
+                        } 
+                        else
                         {
                             if (registry.IsProd)
                             {
@@ -777,16 +835,21 @@ namespace RenTradeWindowService
                                     if (registry.CycleCounter >= this._wireTwistCycleCount - 1 && (registry.ProcessStage == "B1" || registry.ProcessStage == "B2"))
                                     {
                                         // confirmation message if last pcs counter is equal to the nos of initial config.
-                                        if (registry.ProcessCounter == learjob.BundleSize) return false;
+                                        if (registry.ProcessCounter == learjob.JobQty) return false;
                                         else
                                         {
                                             registry.ProcessCounter++;
                                             registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
                                             registry.WriteRegistry("cycleCounter", "0");
 
-                                            // accumulate RefCounter if same serial
-                                            registry.RefCounter++;
-                                            registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                            // check serial status
+                                            if(String.IsNullOrEmpty(registry.RefStatus) || (registry.RefStatus == "JO00OK" && registry.ProcessStage != "A1"))
+                                            {
+                                                // accumulate RefCounter if same serial
+                                                registry.RefCounter++;
+                                                registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                                registry.XmlSerialLogger(registry.RefValue, "Count", registry.RefCounter.ToString());
+                                            }                                            
 
                                             // if mid pcs is set to 0, do not increment quota counter
                                             if (_midPcsInitCount != 0)
@@ -805,15 +868,20 @@ namespace RenTradeWindowService
                                 else
                                 {
                                     // confirmation message if last pcs counter is equal to the nos of initial config.
-                                    if (registry.ProcessCounter == learjob.BundleSize && (registry.ProcessStage == "B1" || registry.ProcessStage == "B2")) return false;
+                                    if (registry.ProcessCounter == learjob.JobQty && (registry.ProcessStage == "B1" || registry.ProcessStage == "B2")) return false;
                                     else
                                     {
                                         registry.ProcessCounter++;
                                         registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
 
-                                        // accumulate RefCounter if same serial
-                                        registry.RefCounter++;
-                                        registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                        // check serial status
+                                        if (String.IsNullOrEmpty(registry.RefStatus) || (registry.RefStatus == "JO00OK" && registry.ProcessStage != "A1"))
+                                        {
+                                            // accumulate RefCounter if same serial
+                                            registry.RefCounter++;
+                                            registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                            registry.XmlSerialLogger(registry.RefValue, "Count", registry.RefCounter.ToString());
+                                        }
 
                                         // if mid pcs is set to 0, do not increment quota counter
                                         if (_midPcsInitCount != 0)
@@ -839,9 +907,14 @@ namespace RenTradeWindowService
                                             registry.ProcessCounter++;
                                             registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
 
-                                            // accumulate RefCounter if same serial
-                                            registry.RefCounter++;
-                                            registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                            // check serial status
+                                            if (String.IsNullOrEmpty(registry.RefStatus) || (registry.RefStatus == "JO00OK" && registry.ProcessStage != "A1"))
+                                            {
+                                                // accumulate RefCounter if same serial
+                                                registry.RefCounter++;
+                                                registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                                registry.XmlSerialLogger(registry.RefValue, "Count", registry.RefCounter.ToString());
+                                            }
                                         }
                                     }
                                     else
@@ -859,9 +932,14 @@ namespace RenTradeWindowService
                                         registry.ProcessCounter++;
                                         registry.WriteRegistry("processCounter", registry.ProcessCounter.ToString());
 
-                                        // accumulate RefCounter if same serial
-                                        registry.RefCounter++;
-                                        registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                        // check serial status
+                                        if (String.IsNullOrEmpty(registry.RefStatus) || (registry.RefStatus == "JO00OK" && registry.ProcessStage != "A1"))
+                                        {
+                                            // accumulate RefCounter if same serial
+                                            registry.RefCounter++;
+                                            registry.WriteRegistry("refCounter", registry.RefCounter.ToString());
+                                            registry.XmlSerialLogger(registry.RefValue, "Count", registry.RefCounter.ToString());
+                                        }
 
                                         registry.WriteRegistry("cycleCounter", "0");
                                     }

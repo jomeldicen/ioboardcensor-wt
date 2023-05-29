@@ -61,20 +61,9 @@ namespace RenTradeWindowService
                     registry.ReadRegistry();
                     if (!String.IsNullOrWhiteSpace(registry.OldOrderNos))
                     {
-                        if (!OrderNumber.Equals(registry.OldOrderNos) && (registry.ProcessStage == "B8" || registry.ProcessStage == "F1"))
+                        if (!OrderNumber.Equals(registry.OldOrderNos) && (registry.ProcessStage == "B8" || registry.ProcessStage == "A1" || registry.ProcessStage == "F1"))
                         {
                             registry.WriteRegistry("quotaCounter", "0");
-                            registry.ReadRegistry();
-                        }
-                    }
-
-                    // if current reference serial nos is different on old serial
-                    registry.ReadRegistry();
-                    if (!String.IsNullOrWhiteSpace(registry.RefOldValue))
-                    {
-                        if (!OrderNumber.Equals(registry.RefOldValue) && (registry.ProcessStage == "B8" || registry.ProcessStage == "F1"))
-                        {
-                            registry.WriteRegistry("refCounter", "0");
                             registry.ReadRegistry();
                         }
                     }
@@ -132,13 +121,21 @@ namespace RenTradeWindowService
 
             // Production Mode
             if (_environmentMode == "PRD")
+            {
                 isPaoJobFinished = OLearCebuPAOapi.IsPAOJobFinished(OrderNumber, _machineName);
+            }
+            registry.WriteRegistry("oldOrderNos", OrderNumber);
+
+            if ((registry.ProcessStage == "F1" || registry.ProcessStage == "F2") && !registry.EndJob)
+            {
+                //registry.XmlSerialLogger(registry.RefValue, registry.RefCounter);
+                registry.WriteRegistry("endJob", "True");
+                registry.ReadRegistry();
+            }
 
             if (isPaoJobFinished)
             {
                 registry.ReadRegistry();
-                registry.WriteRegistry("oldOrderNos", OrderNumber);
-                registry.WriteRegistry("refOldValue", registry.RefValue.ToString());
                 registry.ResetRegistry();
             }
         }
