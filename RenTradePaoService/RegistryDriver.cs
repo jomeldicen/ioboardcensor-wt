@@ -18,12 +18,12 @@ namespace RenTradeWindowService
         public int PedalFlag { get; private set; }
         public bool PedalStatus { get; private set; }
         public bool PedalIsActivated { get; private set; }
-        public int ProcessCounter { get; set; }
+        public long ProcessCounter { get; set; }
         public bool IsProd { get; private set; }
         public bool IsPullTest { get; private set; }
-        public int TestCounter { get; set; }
-        public int QuotaCounter { get; set; }
-        public int CycleCounter { get; set; }
+        public long TestCounter { get; set; }
+        public long QuotaCounter { get; set; }
+        public long CycleCounter { get; set; }
         public string ProcessStage { get; private set; }
         public bool ReelStatus { get; private set; }
         public bool EndJob { get; private set; }
@@ -35,7 +35,7 @@ namespace RenTradeWindowService
         public string RefStatus { get; private set; }
         public int RefInitialCount { get; set; }
         public int RefFinalCount { get; set; }
-        public int RefCounter { get; set; }
+        public long RefCounter { get; set; }
 
         private readonly string _logPath;
 
@@ -96,13 +96,13 @@ namespace RenTradeWindowService
                 {
                     this.PedalFlag = Convert.ToInt16(key.GetValue("pedalFlag"));                            // 1 means hit, 0 means loose
                     this.PedalStatus = Convert.ToBoolean(key.GetValue("pedalStatus"));                      // true means pedal is activated by default
-                    this.ProcessCounter = Convert.ToInt16(key.GetValue("processCounter"));                  // number of process production item per batches
+                    this.ProcessCounter = Convert.ToInt64(key.GetValue("processCounter"));                  // number of process production item per batches
                     this.IsProd = Convert.ToBoolean(key.GetValue("isProd"));                                // number of process production item per batches
                     this.IsPullTest = Convert.ToBoolean(key.GetValue("isPullTest"));                        // true means reel material is detected
 
-                    this.TestCounter = Convert.ToInt16(key.GetValue("testCounter"));                        // number of pull test item on first Pcs
-                    this.QuotaCounter = Convert.ToInt16(key.GetValue("quotaCounter"));                      // number of cummulative production count    
-                    this.CycleCounter = Convert.ToInt16(key.GetValue("cycleCounter"));                      // number of cycle wt count                    
+                    this.TestCounter = Convert.ToInt64(key.GetValue("testCounter"));                        // number of pull test item on first Pcs
+                    this.QuotaCounter = Convert.ToInt64(key.GetValue("quotaCounter"));                      // number of cummulative production count    
+                    this.CycleCounter = Convert.ToInt64(key.GetValue("cycleCounter"));                      // number of cycle wt count                    
                     this.ProcessStage = key.GetValue("processStage").ToString();                            // get the current stage
 
                     this.ReelStatus = Convert.ToBoolean(key.GetValue("reelStatus"));                        // Check Reel Status
@@ -114,7 +114,7 @@ namespace RenTradeWindowService
                     this.RefStatus = key.GetValue("refStatus").ToString();
                     this.RefInitialCount = Convert.ToInt16(key.GetValue("refInitialCount"));
                     this.RefFinalCount = Convert.ToInt16(key.GetValue("refFinalCount"));
-                    this.RefCounter = Convert.ToInt16(key.GetValue("refCounter"));
+                    this.RefCounter = Convert.ToInt64(key.GetValue("refCounter"));
 
                     this.EndJob = Convert.ToBoolean(key.GetValue("endJob"));
 
@@ -211,6 +211,24 @@ namespace RenTradeWindowService
             }
 
             return serialCount;
+        }
+
+        public string XmlSerialFinder(string serial, string type)
+        {
+            string subFolderPath = this.@_logPath + "serial\\";
+
+            if (!Directory.Exists(subFolderPath))
+                Directory.CreateDirectory(subFolderPath);
+
+            string filePath = subFolderPath + serial + ".xml";
+            if (File.Exists(filePath))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(filePath);
+                return xmlDoc.SelectSingleNode("/Serial/" + type).InnerText;
+            }
+
+            return "";
         }
 
         public void XmlSerialLogger(string serial, string type, string value)

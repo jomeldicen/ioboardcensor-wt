@@ -254,6 +254,7 @@ namespace RenTradeWindowForm
 
                             resetGroupInput();
 
+                            registry.WriteRegistry("pedalStatus", "False");
                             registry.WriteRegistry("processStage", "F2");
                             registry.WriteRegistry("refStatus", "JP002");
 
@@ -286,6 +287,7 @@ namespace RenTradeWindowForm
                         }
                         else
                         {
+                            registry.XmlSerialLogger(registry.RefValue, "Status", "NOK");
                             registry.WriteRegistry("refStatus", "JO002");
                             // Reference Group
                             lblRefRemarks.Text = "";
@@ -379,6 +381,12 @@ namespace RenTradeWindowForm
                         if (registry.ProcessStage == "F2")
                         {
                             lblRemarks.Text = "Waiting to abort JO on DIIT";
+                            btnTerminate.Enabled = false;
+                            btnStart.Enabled = false;
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = false;
+                            ptStripMenuItem.Enabled = false;
+                            cmStripMenuItem.Enabled = false;
                             goto proceed;
                         }
 
@@ -852,7 +860,7 @@ namespace RenTradeWindowForm
                                 lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblDailyTarget.Text;
                             else
                             {
-                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                long i = _wireTwistInitCount * registry.ProcessCounter;
                                 string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblDailyTarget.Text;
                             }
@@ -870,7 +878,7 @@ namespace RenTradeWindowForm
                                 lblRemarks.Text = "Pedal is in action: " + registry.ProcessCounter.ToString() + " out of " + lblDailyTarget.Text;
                             else
                             {
-                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                long i = _wireTwistInitCount * registry.ProcessCounter;
                                 string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblDailyTarget.Text;
                             }
@@ -915,7 +923,7 @@ namespace RenTradeWindowForm
                             } 
                             else
                             {
-                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                long i = _wireTwistInitCount * registry.ProcessCounter;
                                 string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
 
@@ -963,7 +971,7 @@ namespace RenTradeWindowForm
                                 lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
                             else
                             {
-                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                long i = _wireTwistInitCount * registry.ProcessCounter;
                                 string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
                                 //lblQuota.Text = (Convert.ToInt16(lblQuota.Text) + 1).ToString();
@@ -981,7 +989,7 @@ namespace RenTradeWindowForm
                                 lblRemarks.Text = "For additional pc(s) execution: " + registry.TestCounter.ToString() + " out of " + _lastPcsInitCount.ToString();
                             else
                             {
-                                int i = _wireTwistInitCount * registry.ProcessCounter;
+                                long i = _wireTwistInitCount * registry.ProcessCounter;
                                 string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
                             }
@@ -1280,7 +1288,7 @@ namespace RenTradeWindowForm
                         else
                         {
                             btnStart.Enabled = false;
-                            btnTerminate.Enabled = true;
+                            btnTerminate.Enabled = registry.ProcessStage == "F2"? false : true;
                         }
 
                         if (registry.ProcessStage == "A1")
@@ -1333,6 +1341,17 @@ namespace RenTradeWindowForm
                             tmStripMenuItem.Enabled = true;
                             ptStripMenuItem.Enabled = true;
                             cmStripMenuItem.Enabled = false;
+                        }
+
+                        // waiting for DiiT to terminate, then all button must disabled
+                        if (registry.ProcessStage == "F2")
+                        {
+                            stStripMenuItem.Enabled = false;
+                            tmStripMenuItem.Enabled = false;
+                            ptStripMenuItem.Enabled = false;
+                            cmStripMenuItem.Enabled = false;
+                            btnStart.Enabled = false;
+                            btnTerminate.Enabled = false;
                         }
 
                         tsStatusLabel.Text = (registry.PedalStatus) ? "Pedal is active" : "Pedal is disabled";
@@ -1467,6 +1486,7 @@ namespace RenTradeWindowForm
                 grpRef.Location = new Point(330, 15);
                 grpRef.Enabled = false;
 
+                registry.WriteRegistry("pedalStatus", "False");
                 registry.WriteRegistry("processStage", "F2");
             } 
         }
@@ -2015,6 +2035,14 @@ namespace RenTradeWindowForm
             string serial = serials[0].Trim().ToString();
             string initialCount = serials[1].Trim().ToString();
             string finalCount = serials[2].Trim().ToString();
+
+            // check serial status if ok to process
+            string serialStatus = registry.XmlSerialFinder(serial, "Status");
+            if(serialStatus.ToLower() == "nok")
+            {
+                MessageBox.Show("Serial is not acceptable anymore. Not Allowed!", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
 
             DialogResult result = MessageBox.Show(this, "You are entering: " + serial + ". Do you want to proceed?", "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (result == DialogResult.Yes)

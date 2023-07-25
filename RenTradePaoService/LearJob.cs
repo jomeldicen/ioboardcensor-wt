@@ -117,7 +117,7 @@ namespace RenTradeWindowService
 
         public void JobFinished()
         {
-            bool isPaoJobFinished = true;
+            bool isPaoJobFinished = false;
 
             // Production Mode
             if (_environmentMode == "PRD")

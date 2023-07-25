@@ -195,6 +195,7 @@ namespace RenTradeWindowService
                         // Force Terminate Job 
                         if (registry.ProcessStage == "F2")
                         {
+                            registry.WriteRegistry("pedalStatus", "False");
                             learjob.JobFinished();
                             registry.ReadRegistry();
                             goto proceed;
