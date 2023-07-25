@@ -61,7 +61,7 @@ namespace RenTradeWindowService
                     registry.ReadRegistry();
                     if (!String.IsNullOrWhiteSpace(registry.OldOrderNos))
                     {
-                        if (!OrderNumber.Equals(registry.OldOrderNos) && (registry.ProcessStage == "B8" || registry.ProcessStage == "F1"))
+                        if (!OrderNumber.Equals(registry.OldOrderNos) && (registry.ProcessStage == "B8" || registry.ProcessStage == "A1" || registry.ProcessStage == "F1"))
                         {
                             registry.WriteRegistry("quotaCounter", "0");
                             registry.ReadRegistry();
@@ -117,15 +117,25 @@ namespace RenTradeWindowService
 
         public void JobFinished()
         {
-            bool isPaoJobFinished = true;
+            bool isPaoJobFinished = false;
 
             // Production Mode
             if (_environmentMode == "PRD")
+            {
                 isPaoJobFinished = OLearCebuPAOapi.IsPAOJobFinished(OrderNumber, _machineName);
+            }
+            registry.WriteRegistry("oldOrderNos", OrderNumber);
+
+            if ((registry.ProcessStage == "F1" || registry.ProcessStage == "F2") && !registry.EndJob)
+            {
+                //registry.XmlSerialLogger(registry.RefValue, registry.RefCounter);
+                registry.WriteRegistry("endJob", "True");
+                registry.ReadRegistry();
+            }
 
             if (isPaoJobFinished)
             {
-                registry.WriteRegistry("oldOrderNos", OrderNumber);
+                registry.ReadRegistry();
                 registry.ResetRegistry();
             }
         }
