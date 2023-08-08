@@ -408,7 +408,7 @@ namespace RenTradeWindowForm
                         if (registry.ProcessStage == "A2" && !registry.PedalStatus)
                         {
                             lblRemarks.Text = "For quantity validation";
-                            lblQuota.Text = (_machineType == "WT") ? (Convert.ToInt16(lblQuota.Text) + 1).ToString() : lblQuota.Text;
+                            lblQuota.Text = (_machineType == "WT") ? (Convert.ToInt64(lblQuota.Text) + 1).ToString() : lblQuota.Text;
 
                             DialogResult result = MessageBox.Show(this, _testPcsMsg, "Message Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                             if (result == DialogResult.Yes)
@@ -861,7 +861,7 @@ namespace RenTradeWindowForm
                             else
                             {
                                 long i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                string counter = Convert.ToInt64(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblDailyTarget.Text;
                             }
 
@@ -879,7 +879,7 @@ namespace RenTradeWindowForm
                             else
                             {
                                 long i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                string counter = Convert.ToInt64(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "Pedal is in action: " + counter + " out of " + lblDailyTarget.Text;
                             }
 
@@ -924,7 +924,7 @@ namespace RenTradeWindowForm
                             else
                             {
                                 long i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                string counter = Convert.ToInt64(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
 
                                 // activate pedal to continue
@@ -972,9 +972,9 @@ namespace RenTradeWindowForm
                             else
                             {
                                 long i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                string counter = Convert.ToInt64(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
-                                //lblQuota.Text = (Convert.ToInt16(lblQuota.Text) + 1).ToString();
+                                //lblQuota.Text = (Convert.ToInt64(lblQuota.Text) + 1).ToString();
                             }
                                 
 
@@ -990,7 +990,7 @@ namespace RenTradeWindowForm
                             else
                             {
                                 long i = _wireTwistInitCount * registry.ProcessCounter;
-                                string counter = Convert.ToInt16(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
+                                string counter = Convert.ToInt64(lblDailyTarget.Text) <= i ? lblDailyTarget.Text : i.ToString();
                                 lblRemarks.Text = "For last pc(s) execution: " + counter + " out of " + lblDailyTarget.Text;
                             }
 
@@ -2026,7 +2026,7 @@ namespace RenTradeWindowForm
             }
 
             // if initial is greater than final count
-            if (Convert.ToInt16(serials[1]) > Convert.ToInt16(serials[2]))
+            if (Convert.ToInt64(serials[1]) > Convert.ToInt64(serials[2]))
             {
                 MessageBox.Show("Initial Count should not be greater than Final Count. Invalid Format!", "Message Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
@@ -2048,7 +2048,7 @@ namespace RenTradeWindowForm
             if (result == DialogResult.Yes)
             {
                 int serialCount = registry.XmlSerialFinder(serial);
-                if (Convert.ToInt16(finalCount) < serialCount)
+                if (Convert.ToInt64(finalCount) < serialCount)
                 {
                     // Reference Group
                     lblRefRemarks.Text = "";

@@ -33,8 +33,8 @@ namespace RenTradeWindowService
         public string JobInfo { get; private set; }
         public string RefValue { get; private set; }
         public string RefStatus { get; private set; }
-        public int RefInitialCount { get; set; }
-        public int RefFinalCount { get; set; }
+        public long RefInitialCount { get; set; }
+        public long RefFinalCount { get; set; }
         public long RefCounter { get; set; }
 
         private readonly string _logPath;
@@ -112,8 +112,8 @@ namespace RenTradeWindowService
                     this.JobInfo = key.GetValue("jobInfo").ToString();
                     this.RefValue = key.GetValue("refValue").ToString();
                     this.RefStatus = key.GetValue("refStatus").ToString();
-                    this.RefInitialCount = Convert.ToInt16(key.GetValue("refInitialCount"));
-                    this.RefFinalCount = Convert.ToInt16(key.GetValue("refFinalCount"));
+                    this.RefInitialCount = Convert.ToInt64(key.GetValue("refInitialCount"));
+                    this.RefFinalCount = Convert.ToInt64(key.GetValue("refFinalCount"));
                     this.RefCounter = Convert.ToInt64(key.GetValue("refCounter"));
 
                     this.EndJob = Convert.ToBoolean(key.GetValue("endJob"));

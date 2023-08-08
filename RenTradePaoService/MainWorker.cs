@@ -431,7 +431,7 @@ namespace RenTradeWindowService
                             //*********************** End Daily Quota Section ***********************//
 
                             // check if pedal hit counter exceeds the production quantity
-                            int jobQty = learjob.JobQty;
+                            long jobQty = learjob.JobQty;
 
                             if(_machineType == "RG")
                             {
@@ -509,7 +509,7 @@ namespace RenTradeWindowService
                             } 
                             else // machine time WT
                             {
-                                int cycleCount = (_wireTwistInitCount > 0) ? learjob.JobQty / _wireTwistInitCount : 0;
+                                long cycleCount = (_wireTwistInitCount > 0) ? learjob.JobQty / _wireTwistInitCount : 0;
                                 jobQty = (learjob.JobQty % _wireTwistInitCount == 0)? cycleCount - _lastPcsInitCount : cycleCount;
                                 if (registry.ProcessCounter >= jobQty)
                                 {
