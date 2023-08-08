@@ -16,8 +16,8 @@ namespace RenTradeWindowService
         public string JobInfo { get; private set; }
         public string OrderNumber { get; private set; }
         public string LeadSet { get; private set; }
-        public int JobQty { get; private set; }
-        public int BundleSize { get; private set; }
+        public long JobQty { get; private set; }
+        public long BundleSize { get; private set; }
 
         private readonly string _environmentMode;
         private readonly string _machineName;
@@ -52,8 +52,8 @@ namespace RenTradeWindowService
 
                     OrderNumber = tokens[0].Trim().ToString();
                     LeadSet = tokens[1].Trim().ToString();
-                    JobQty = Convert.ToInt16(tokens[2]);
-                    BundleSize = Convert.ToInt16(tokens[3]);
+                    JobQty = Convert.ToInt64(tokens[2]);
+                    BundleSize = Convert.ToInt64(tokens[3]);
 
                     registry.WriteRegistry("jobInfo", JobInfo);
 
@@ -76,8 +76,8 @@ namespace RenTradeWindowService
 
                     OrderNumber = tokens[0].Trim().ToString();
                     LeadSet = tokens[1].Trim().ToString();
-                    JobQty = Convert.ToInt16(tokens[2]);
-                    BundleSize = Convert.ToInt16(tokens[3]);
+                    JobQty = Convert.ToInt64(tokens[2]);
+                    BundleSize = Convert.ToInt64(tokens[3]);
 
                     registry.ReadRegistry();
                 }
